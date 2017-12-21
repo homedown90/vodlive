@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="4b006922-1a0d-44a4-8ad7-3a6e9b06eb01" name="docker" url="http://www.ctlvl.com">
+        <fileTransfer host="127.0.0.1" port="49022" rootFolder="/home/workspace/ctvodlive" accessType="SFTP">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" />
+          </advancedOptions>
+          <option name="port" value="49022" />
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
