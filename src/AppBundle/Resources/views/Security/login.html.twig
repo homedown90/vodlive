@@ -2,7 +2,7 @@
 
 {% block title %}AppBundle:Security:login{% endblock %}
 
-{% block body %}
+{% block content %}
     {% if error %}
         <div>{{ error.messageKey|trans(error.messageData, 'security') }}</div>
     {% endif %}

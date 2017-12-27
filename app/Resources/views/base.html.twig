@@ -7,7 +7,10 @@
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
     </head>
     <body>
-        {% block body %}{% endblock %}
+        {% block nav %}{% endblock %}
+        {% block banner %} {% endblock %}
+        {% block content %} {% endblock %}
+        {% block foot %} {% endblock %}
         {% block javascripts %}{% endblock %}
     <script src="{{ asset('bundle.js') }}"></script>
     </body>

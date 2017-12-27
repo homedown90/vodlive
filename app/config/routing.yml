@@ -1,5 +1,5 @@
 app:
-    resource: '@AppBundle/Controller/'
+    resource: '@AppBundle/Controller/HomeController.php'
     type: annotation
 hello:
     path:       /hello

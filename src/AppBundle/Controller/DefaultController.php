@@ -10,16 +10,12 @@ use AppBundle\Entity\MiUser;
 
 class DefaultController extends Controller
 {
-    /**
-     * @Route("/admin")
-     */
+
     public function adminAction()
     {
         return new Response('<html><body>Admin page!</body></html>');
     }
-    /**
-     * @Route("/", name="homepage")
-     */
+
     public function indexAction(Request $request)
     {
         // replace this example code with whatever you need
