@@ -2,6 +2,20 @@
 <project version="4">
   <component name="PublishConfigData">
     <serverData>
+      <paths name="docker">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+          <excludedPaths>
+            <excludedPath path="/vendor" />
+            <excludedPath local="true" path="$PROJECT_DIR$/vendor" />
+            <excludedPath path="/var" />
+            <excludedPath local="true" path="$PROJECT_DIR$/var" />
+            <excludedPath path="/node_modules" />
+          </excludedPaths>
+        </serverdata>
+      </paths>
       <paths name="edu">
         <serverdata>
           <mappings>

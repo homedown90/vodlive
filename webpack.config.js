@@ -1,8 +1,8 @@
 const webpack = require('webpack');
 module.exports = {
-    entry: __dirname + "/main.js",
+    entry: __dirname + "/web/static-dist/app/js/index.js",
     output: {
-        path: __dirname ,
+        path: __dirname +"/web",
         filename: "bundle.js"
     },
     module:

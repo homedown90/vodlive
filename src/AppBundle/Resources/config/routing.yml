@@ -1,0 +1,14 @@
+default_create:
+    path: /create
+    defaults: { _controller: AppBundle:Default:create }
+index:
+    path:     /index
+    defaults: { _controller: AppBundle:Hello:index }
+
+login:
+    path:     /login
+    defaults: { _controller: AppBundle:Security:login }
+login_check:
+    path: /login_check
+logout:
+    path: /logout
