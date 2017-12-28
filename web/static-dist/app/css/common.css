@@ -1,1 +1,3 @@
+@import "extendbootstrap";
 @import "~bootstrap/scss/bootstrap";
+@import "frontindex.css";
