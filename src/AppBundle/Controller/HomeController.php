@@ -10,6 +10,9 @@ class HomeController extends Controller
 
     public function indexAction()
     {
+        /**
+         * @Route("/", name="homepage")
+         */
         return $this->render('@App/Home/index.html.twig',array(
             'page'=>array("title"=>'首页')
         ));

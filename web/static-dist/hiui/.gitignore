@@ -1,0 +1,19 @@
+# Editor generate files
+.idea/
+.sublime-*
+.settings
+
+# Dev dependencies and cache files
+.gulp.pid
+.sass-cache
+node_modules/
+
+# Folder view configuration files
+.DS_Store
+Thumbs.db
+._*
+
+# Files that might appear on external disks
+*~
+~*
+bash

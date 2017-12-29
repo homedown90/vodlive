@@ -1,0 +1,52 @@
+{% extends "@App/homebase.html.twig" %}
+
+{% block title %}{{ page.title }}{% endblock %}
+{% block stylesheets %}
+    <script type="text/javascript" src="{{ asset('/static-dist/app/js/ckplayer/ckplayer.js') }}"></script>
+{% endblock %}
+{% block banner %}
+<section>
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#">Home</a></li>
+                <li class="breadcrumb-item"><a href="#">Library</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Data</li>
+            </ol>
+        </nav>
+        <div style="height: 55px;display: flex;flex-direction: row;justify-content: space-between;align-items: center;">
+            <div style="    font-size: 30px;font-weight: 700;text-shadow: 0 2px 2px rgba(0,0,0,.1);">硬件知识之处理器</div>
+            <div style="    text-align: center;width: 172px;">
+                <div style="    height: 29px;line-height: 29px;font-size: 24px;display: flex;flex-direction: row;justify-content: space-around;align-items: center;"><span>6 </span><span></span><span>0</span></div>
+                <div style="    height: 16px;line-height: 16px;margin-top: 10px;font-size: 16px;display: flex;flex-direction: row;justify-content: space-around;align-items: center;" "><span class="text-left">学习人数</span><span class="text-right">课程时长</span></div>
+            </div>
+        </div>
+
+    </div>
+
+</section>
+{% endblock %}
+
+{% block content %}
+    <div style="background-color: #f5f5f5;overflow: hidden;padding-top: 60px;padding-bottom: 60px;">
+
+    <section>
+        <div class="container">
+            <div class="row">
+                <div class="slide-player">
+                    <div id="video" style="width:600px;height:400px;"></div>
+                    <script type="text/javascript">
+                            var videoObject = {
+                                container: '#video',//“#”代表容器的ID，“.”或“”代表容器的class
+                                variable: 'player',//该属性必需设置，值等于下面的new chplayer()的对象
+                                flashplayer:false,//如果强制使用flashplayer则设置成true
+                                video:'examples01.mp4'//视频地址
+                            };
+                            var player=new ckplayer(videoObject);
+                    </script>
+                </div>
+            </div>
+        </div>
+    </section>
+    </div>
+{% endblock %}

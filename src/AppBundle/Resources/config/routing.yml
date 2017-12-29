@@ -10,7 +10,21 @@ login:
 home_page:
     path: /
     defaults: { _controller: AppBundle:Home:index }
+home_vod_list:
+    path: /vod
+    defaults: { _controller: AppBundle:FrontVod:showVodList }
+home_vod_item:
+    path: /vod/item
+    defaults: { _controller: AppBundle:FrontVod:showVodItem }
+
+admin_page:
+    path: /admin/show
+    defaults: { _controller: AppBundle:Admin:showIndex }
 login_check:
     path: /login_check
 logout:
     path: /logout
+
+show_list:
+    path:     /showList
+    defaults: { _controller: AppBundle:ManageVod:showList }
