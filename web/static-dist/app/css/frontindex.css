@@ -1,3 +1,18 @@
 .margin-navbar {
     margin-top: 3.5rem !important;
  }
+.card:hover  {
+    box-shadow: 0 10px 12px 0 rgba(0,0,0,.1);
+}
+.com-a,.com-a:hover {
+    text-decoration: none;
+    color:inherit;
+}
+.com-card-h {
+    white-space: nowrap;
+    overflow: hidden
+}
+.com-card-strong {
+    font-weight: bold;
+    display: inline-block
+}
