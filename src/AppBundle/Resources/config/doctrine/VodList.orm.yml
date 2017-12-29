@@ -1,0 +1,49 @@
+AppBundle\Entity\VodList:
+    type: entity
+    table: vod_list
+    repositoryClass: AppBundle\Repository\VodListRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        title:
+            type: string
+            length: 255
+            nullable: true
+        description:
+            type: text
+            nullable: true
+        onlineNum:
+            type: integer
+            nullable: true
+            column: online_num
+        reserveNum:
+            type: integer
+            nullable: true
+            column: reserve_num
+        status:
+            type: string
+            length: 255
+            nullable: true
+        pictureUrl:
+            type: string
+            length: 255
+            column: picture_url
+        streams:
+            type: string
+            length: 255
+        creator:
+            type: integer
+            nullable: true
+        createTime:
+            type: datetimetz
+            nullable: true
+            column: create_time
+        modifiedTime:
+            type: datetimetz
+            nullable: true
+            column: modified_time
+    lifecycleCallbacks: {  }

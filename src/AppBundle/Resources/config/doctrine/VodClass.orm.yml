@@ -1,0 +1,32 @@
+AppBundle\Entity\VodClass:
+    type: entity
+    table: null
+    repositoryClass: AppBundle\Repository\VodClassRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        name:
+            type: string
+            length: 255
+            nullable: true
+            unique: true
+        parentId:
+            type: integer
+            nullable: true
+            column: parent_id
+        path:
+            type: string
+            length: 255
+        createTime:
+            type: datetimetz
+            nullable: true
+            column: create_time
+        modifiedTime:
+            type: datetimetz
+            nullable: true
+            column: modified_time
+    lifecycleCallbacks: {  }
