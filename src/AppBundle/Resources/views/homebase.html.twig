@@ -3,8 +3,6 @@
 {% block title %}{{ page.title }}{% endblock %}
 
 {% block nav %}
-
-
         <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
             <div class="container">
             <a class="navbar-brand" href="{{ path('home_page') }}">内部视频分享</a>
@@ -40,10 +38,10 @@
            <div class="col">
                <div class="row justify-content-between">
                    <div class="col-9">
-                       <nav class="nav nav-tabs" id="myTab" role="tablist">
-                           <a class="nav-item nav-link active"  data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Home</a>
-                           <a class="nav-item nav-link"  data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">Profile</a>
-                           <a class="nav-item nav-link"  data-toggle="tab" href="#nav-contact" role="tab" aria-controls="nav-contact" aria-selected="false">Contact</a>
+                       <nav class="nav nav-pills flex-column flex-sm-row" id="myTab" role="tablist">
+                           <a class="flex-sm-fill text-sm-center nav-link  active"  data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Home</a>
+                           <a class="flex-sm-fill text-sm-center nav-link "  data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">Profile</a>
+                           <a class="flex-sm-fill text-sm-center nav-link "  data-toggle="tab" href="#nav-contact" role="tab" aria-controls="nav-contact" aria-selected="false">Contact</a>
                        </nav>
                    </div>
                    <div class="col-3">
