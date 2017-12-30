@@ -1,5 +1,28 @@
 {% extends "base.html.twig" %}
+ {% block nav %}
+     <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+         <div class="container">
+             <a class="navbar-brand" href="{{ path('home_page') }}">内部视频分享</a>
+             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
+                     aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+                 <span class="navbar-toggler-icon"></span>
+             </button>
 
+             <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+                 <ul class="navbar-nav mr-auto">
+                     <li class="nav-item active">
+                         <a class="nav-link" href="{{ path('home_page') }}">首页 <span class="sr-only"></span></a>
+                     </li>
+                     <li class="nav-item">
+                         <a class="nav-link" href="#">点播</a>
+                     </li>
+
+                 </ul>
+             </div>
+         </div>
+     </nav>
+
+ {% endblock %}
 {% block content %}
     <div style="background-color: #f5f5f5;overflow: hidden;padding-top: 60px;padding-bottom: 60px;">
 

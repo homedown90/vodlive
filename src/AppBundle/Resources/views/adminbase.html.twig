@@ -2,20 +2,28 @@
 {% block stylesheets %}
     <link rel="stylesheet" href="{{ asset('/static-dist/hiui/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('/static-dist/hiui/css/hiui.min.css') }}">
-    <script type="text/javascript" charset="utf-8" async="" src="/hiui/js/module/datetimepicker.js?20170619"></script><style type="text/css">.hcdict-btnclose,.hcdict-fixer{background-image: url('http://dict.cn/v/1.0.2/i1/plugins/resources/images/dict_chrome_icon01.png');}.hcdict-popcont{background-image: url('http://dict.cn/v/1.0.2/i1/plugins/resources/images/dict_chrome_bg.png');}</style><style id="style-1-cropbar-clipper">/* Copyright 2014 Evernote Corporation. All rights reserved. */
-    .en-markup-crop-options {
-        top: 18px !important;
-        left: 50% !important;
-        margin-left: -100px !important;
-        width: 200px !important;
-        border: 2px rgba(255,255,255,.38) solid !important;
-        border-radius: 4px !important;
-    }
+    <script type="text/javascript" charset="utf-8" async="" src="/hiui/js/module/datetimepicker.js?20170619"></script>
+    <style type="text/css">.hcdict-btnclose, .hcdict-fixer {
+            background-image: url('http://dict.cn/v/1.0.2/i1/plugins/resources/images/dict_chrome_icon01.png');
+        }
 
-    .en-markup-crop-options div div:first-of-type {
-        margin-left: 0px !important;
-    }
-</style>
+        .hcdict-popcont {
+            background-image: url('http://dict.cn/v/1.0.2/i1/plugins/resources/images/dict_chrome_bg.png');
+        }</style>
+    <style id="style-1-cropbar-clipper">/* Copyright 2014 Evernote Corporation. All rights reserved. */
+        .en-markup-crop-options {
+            top: 18px !important;
+            left: 50% !important;
+            margin-left: -100px !important;
+            width: 200px !important;
+            border: 2px rgba(255, 255, 255, .38) solid !important;
+            border-radius: 4px !important;
+        }
+
+        .en-markup-crop-options div div:first-of-type {
+            margin-left: 0px !important;
+        }
+    </style>
 {% endblock %}
 {% block nav %}
     <nav id="nav" class="be-navbar navbar navbar-fixed-top">
@@ -55,46 +63,37 @@
         </div>
     </nav>
 
-{% endblock%}
+{% endblock %}
 
 {% block content %}
     <div id="main" class="be-wrapper">
-
         <!-- 主体区域 -->
         <div class="be-content">
-
             <!-- 面包屑 -->
             <ol class="be-breadcrumb breadcrumb">
                 <li><a href="#">首页</a></li>
                 <li class="active">基本布局</li>
             </ol>
-
             <!-- 正文区域 -->
             <div class="be-main" style="min-height: 790px;">
                 <div class="container-fluid">
                     <div class="main-content">
-
                         <div class="row">
                             <div class="col-sm-10">
-
                                 <div class="panel panel-info">
                                     <div class="panel-heading"><h3 class="panel-title">查看本页源代码了解基本布局</h3></div>
                                     <div class="panel-body">
                                         <p>含注释。</p>
                                     </div>
                                 </div>
-
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
-
             <!-- 页脚信息 -->
             <footer class="be-footer clearfix">
                 <p class="pull-left">© 2016 小米网平台研发部</p>
-
                 <!-- 随机轮播，用于展示心灵鸡汤或系统的一句话通知，也可以只保留一条文案显示 Slogan -->
                 <p class="pull-right">让每一个人都享受科技的乐趣</p>
                 <!--
@@ -109,14 +108,11 @@
                 -->
             </footer>
         </div>
-
         <!-- 侧栏导航 -->
-        <aside class="be-sidebar">
-
+        <aside class="be-sidebar" >
             <div class="sidebar-wrapper">
                 <div class="sidebar-scroll">
                     <div class="sidebar">
-
                         <ul id="J_navList" class="nav-list" role="tablist" aria-multiselectable="true">
                             <li>
                                 <a href="{{ path('homepage') }}" title="首页">
@@ -127,36 +123,34 @@
                             </li>
                             <!-- 二级菜单演示（展开） -->
                             {#<li class="opened">#}
-                                {#<a href="#collapseSubMenu" data-toggle="collapse" title="点播管理">#}
-                                    {#<i class="fa fa-cog"></i>#}
-                                    {#<span class="text">点播管理</span>#}
-                                    {#<b class="caret"></b>#}
-                                {#</a>#}
+                            {#<a href="#collapseSubMenu" data-toggle="collapse" title="点播管理">#}
+                            {#<i class="fa fa-cog"></i>#}
+                            {#<span class="text">点播管理</span>#}
+                            {#<b class="caret"></b>#}
+                            {#</a>#}
 
-                                {#<div class="sub-menu collapse in" id="collapseSubMenu">#}
-                                    {#<span class="title">二级菜单演示</span>#}
-                                    {#<ul class="sub-nav-list">#}
-                                        {#<li class="active"><a href="/site/basic.html"><span class="text">基本布局</span></a>#}
-                                        {#</li>#}
-
-                                       {##}
-                                        {#<li>#}
-                                            {#<a class="collapsed" href="#collapseThirdMenu" data-toggle="collapse">#}
-                                                {#<span class="text">三级菜单演示</span>#}
-                                                {#<b class="caret"></b>#}
-                                            {#</a>#}
-                                            {#<div class="sub-menu collapse" id="collapseThirdMenu">#}
-                                                {#<span class="title">三级菜单演示</span>#}
-                                                {#<ul class="sub-nav-list">#}
-                                                    {#<li><a href="#"><span class="text">三级菜单1</span></a></li>#}
-                                                    {#<li><a href="#"><span class="text">三级菜单2</span></a></li>#}
-                                                {#</ul>#}
-                                            {#</div>#}
-                                        {#</li>#}
-                                    {#</ul>#}
-                                {#</div>#}
+                            {#<div class="sub-menu collapse in" id="collapseSubMenu">#}
+                            {#<span class="title">二级菜单演示</span>#}
+                            {#<ul class="sub-nav-list">#}
+                            {#<li class="active"><a href="/site/basic.html"><span class="text">基本布局</span></a>#}
                             {#</li>#}
-
+                            {##}
+                            {#<li>#}
+                            {#<a class="collapsed" href="#collapseThirdMenu" data-toggle="collapse">#}
+                            {#<span class="text">三级菜单演示</span>#}
+                            {#<b class="caret"></b>#}
+                            {#</a>#}
+                            {#<div class="sub-menu collapse" id="collapseThirdMenu">#}
+                            {#<span class="title">三级菜单演示</span>#}
+                            {#<ul class="sub-nav-list">#}
+                            {#<li><a href="#"><span class="text">三级菜单1</span></a></li>#}
+                            {#<li><a href="#"><span class="text">三级菜单2</span></a></li>#}
+                            {#</ul>#}
+                            {#</div>#}
+                            {#</li>#}
+                            {#</ul>#}
+                            {#</div>#}
+                            {#</li>#}
                             <!-- 二级菜单演示（收起） -->
                             <li>
                                 <a href="#collapseSubMenu2" class="collapsed" data-toggle="collapse" title="点播管理">
@@ -173,28 +167,28 @@
                                 </div>
                             </li>
                         </ul>
-
                     </div>
                 </div>
             </div>
-
         </aside>
-
     </div>
-
     <script src="{{ asset('/static-dist/hiui/js/hiui.min.js') }}"></script>
     <script src="{{ asset('/static-dist/hiui/js/lib/bootstrap.min.js') }}"></script>
-
-
+    <script src="{{ asset('/static-dist/hiui/js/admin.index.js') }}"></script>
     <div id="hcDictContainer" style="display: none;">
-        <div class="hcdict-poptop" id="hcdict-poptop" onselectstart="return false"><span class="hcdict-toptitle"
-                                                                                         id="hcdict-toptitle" title=""
-                                                                                         onselectstart="return false"></span><span
-                    class="hcdict-topdetail"><a id="hcdict-detail" href="" target="_blank">详细&gt;&gt;</a></span><span
-                    class="hcdict-btnclose" id="hcdict-btnClose" title="关闭(esc)"></span></div>
+        <div class="hcdict-poptop" id="hcdict-poptop" onselectstart="return false">
+            <span class="hcdict-toptitle" id="hcdict-toptitle" title="" onselectstart="return false">
+
+            </span>
+            <span  class="hcdict-topdetail">
+                <a id="hcdict-detail" href="" target="_blank">详细&gt;&gt;</a>
+            </span>
+            <span class="hcdict-btnclose" id="hcdict-btnClose" title="关闭(esc)">
+
+            </span>
+        </div>
         <div class="hcdict-popcont" id="hcdict-popcont">
-            <iframe id="hcDictContent" scrolling="no" frameborder="0" allowtransparency="false"
-                    src="about:blank"></iframe>
+            <iframe id="hcDictContent" scrolling="no" frameborder="0" allowtransparency="false" src="about:blank"></iframe>
         </div>
         <div class="hcdict-popbottom" id="hcdict-popbottom">
             <div class="hcdict-fixer" id="hcdict-fixer" title="锁定位置"></div>
