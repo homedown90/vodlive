@@ -4,7 +4,7 @@ namespace AppBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
-class ManageVodController extends Controller
+class VodManageController extends Controller
 {
     public function showListAction()
     {

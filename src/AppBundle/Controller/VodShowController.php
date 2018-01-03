@@ -4,7 +4,7 @@ namespace AppBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
-class FrontVodController extends Controller
+class VodShowController extends Controller
 {
     public function showVodListAction()
     {
