@@ -1,29 +1,6 @@
 {% extends "base.html.twig" %}
 {% block stylesheets %}
-    <link rel="stylesheet" href="{{ asset('/static-dist/hiui/css/bootstrap.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('/static-dist/hiui/css/hiui.min.css') }}">
-    <script type="text/javascript" charset="utf-8" async="" src="/hiui/js/module/datetimepicker.js?20170619"></script>
-    <style type="text/css">.hcdict-btnclose, .hcdict-fixer {
-            background-image: url('http://dict.cn/v/1.0.2/i1/plugins/resources/images/dict_chrome_icon01.png');
-        }
-
-        .hcdict-popcont {
-            background-image: url('http://dict.cn/v/1.0.2/i1/plugins/resources/images/dict_chrome_bg.png');
-        }</style>
-    <style id="style-1-cropbar-clipper">/* Copyright 2014 Evernote Corporation. All rights reserved. */
-        .en-markup-crop-options {
-            top: 18px !important;
-            left: 50% !important;
-            margin-left: -100px !important;
-            width: 200px !important;
-            border: 2px rgba(255, 255, 255, .38) solid !important;
-            border-radius: 4px !important;
-        }
-
-        .en-markup-crop-options div div:first-of-type {
-            margin-left: 0px !important;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ asset('/hiui/css/hiui.min.css') }}">
 {% endblock %}
 {% block nav %}
     <nav id="nav" class="be-navbar navbar navbar-fixed-top">
@@ -122,35 +99,35 @@
                                 </a>
                             </li>
                             <!-- 二级菜单演示（展开） -->
-                            {#<li class="opened">#}
-                            {#<a href="#collapseSubMenu" data-toggle="collapse" title="点播管理">#}
-                            {#<i class="fa fa-cog"></i>#}
-                            {#<span class="text">点播管理</span>#}
-                            {#<b class="caret"></b>#}
-                            {#</a>#}
+                            <li class="opened">
+                            <a href="#collapseSubMenu" data-toggle="collapse" title="点播管理">
+                            <i class="fa fa-cog"></i>
+                            <span class="text">点播管理</span>
+                            <b class="caret"></b>
+                            </a>
 
-                            {#<div class="sub-menu collapse in" id="collapseSubMenu">#}
-                            {#<span class="title">二级菜单演示</span>#}
-                            {#<ul class="sub-nav-list">#}
-                            {#<li class="active"><a href="/site/basic.html"><span class="text">基本布局</span></a>#}
-                            {#</li>#}
-                            {##}
-                            {#<li>#}
-                            {#<a class="collapsed" href="#collapseThirdMenu" data-toggle="collapse">#}
-                            {#<span class="text">三级菜单演示</span>#}
-                            {#<b class="caret"></b>#}
-                            {#</a>#}
-                            {#<div class="sub-menu collapse" id="collapseThirdMenu">#}
-                            {#<span class="title">三级菜单演示</span>#}
-                            {#<ul class="sub-nav-list">#}
-                            {#<li><a href="#"><span class="text">三级菜单1</span></a></li>#}
-                            {#<li><a href="#"><span class="text">三级菜单2</span></a></li>#}
-                            {#</ul>#}
-                            {#</div>#}
-                            {#</li>#}
-                            {#</ul>#}
-                            {#</div>#}
-                            {#</li>#}
+                            <div class="sub-menu collapse in" id="collapseSubMenu">
+                            <span class="title">二级菜单演示</span>
+                            <ul class="sub-nav-list">
+                            <li class="active"><a href="/site/basic.html"><span class="text">基本布局</span></a>
+                            </li>
+
+                            <li>
+                            <a class="collapsed" href="#collapseThirdMenu" data-toggle="collapse">
+                            <span class="text">三级菜单演示</span>
+                            <b class="caret"></b>
+                            </a>
+                            <div class="sub-menu collapse" id="collapseThirdMenu">
+                            <span class="title">三级菜单演示</span>
+                            <ul class="sub-nav-list">
+                            <li><a href="#"><span class="text">三级菜单1</span></a></li>
+                            <li><a href="#"><span class="text">三级菜单2</span></a></li>
+                            </ul>
+                            </div>
+                            </li>
+                            </ul>
+                            </div>
+                            </li>
                             <!-- 二级菜单演示（收起） -->
                             <li>
                                 <a href="#collapseSubMenu2" class="collapsed" data-toggle="collapse" title="点播管理">
@@ -166,15 +143,28 @@
                                     </ul>
                                 </div>
                             </li>
+                            <li>
+                                <a href="#collapseSubMenu3" class="collapsed" data-toggle="collapse" title="点播管理">
+                                    <i class="fa fa-folder-open"></i>
+                                    <span class="text">点播管理</span>
+                                    <b class="caret"></b>
+                                </a>
+                                <div class="sub-menu collapse" id="collapseSubMenu3">
+                                    <span class="title">点播管理</span>
+                                    <ul class="sub-nav-list">
+                                        <li><a href="#"><span class="text">点播列表</span></a></li>
+                                        <li><a href="#"><span class="text">添加分类</span></a></li>
+                                    </ul>
+                                </div>
+                            </li>
                         </ul>
                     </div>
                 </div>
             </div>
         </aside>
     </div>
-    <script src="{{ asset('/static-dist/hiui/js/hiui.min.js') }}"></script>
-    <script src="{{ asset('/static-dist/hiui/js/lib/bootstrap.min.js') }}"></script>
-    <script src="{{ asset('/static-dist/hiui/js/admin.index.js') }}"></script>
+    <script src="{{ asset('/hiui/js/hiui.min.js') }}"></script>
+    <script src="{{ asset('/hiui/js/admin.index.js') }}"></script>
     <div id="hcDictContainer" style="display: none;">
         <div class="hcdict-poptop" id="hcdict-poptop" onselectstart="return false">
             <span class="hcdict-toptitle" id="hcdict-toptitle" title="" onselectstart="return false">
