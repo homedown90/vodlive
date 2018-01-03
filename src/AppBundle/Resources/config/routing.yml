@@ -12,20 +12,20 @@ home_page:
     defaults: { _controller: AppBundle:Home:index }
 home_vod_list:
     path: /vod
-    defaults: { _controller: AppBundle:FrontVod:showVodList }
+    defaults: { _controller: AppBundle:VodShow:showVodList }
 home_vod_item:
     path: /vod/item
-    defaults: { _controller: AppBundle:FrontVod:showVodItem }
+    defaults: { _controller: AppBundle:VodShow:showVodItem }
 
 admin_page:
     path: /admin/show
     defaults: { _controller: AppBundle:Admin:showIndex }
 admin_vod_list:
     path: /vod/list
-    defaults: { _controller: AppBundle:ManageVod:showList }
+    defaults: { _controller: AppBundle:VodManage:showList }
 admin_vod_list_data:
     path: /vod/list/data
-    defaults: { _controller: AppBundle:ManageVod:getListData}
+    defaults: { _controller: AppBundle:VodManage:getListData}
 login_check:
     path: /login_check
 logout:
@@ -33,4 +33,4 @@ logout:
 
 show_list:
     path:     /showList
-    defaults: { _controller: AppBundle:ManageVod:showList }
+    defaults: { _controller: AppBundle:VodManage:showList }
