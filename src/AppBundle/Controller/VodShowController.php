@@ -8,12 +8,12 @@ class FrontVodController extends Controller
 {
     public function showVodListAction()
     {
-        return  $this->render('@App/FrontVod/vodlist.html.twig',array(
+        return  $this->render('@App/VodShow/list.html.twig',array(
             'page'=>array("title"=>'首页')
         ));
     }
     public function showVodItemAction()
     {
-        return $this->render('@App/FrontVod/voditem.html.twig',array('page'=>array("title"=>'首页')));
+        return $this->render('@App/VodShow/item.html.twig',array('page'=>array("title"=>'首页')));
     }
 }

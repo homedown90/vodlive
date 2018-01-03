@@ -49,40 +49,19 @@
             <!-- 面包屑 -->
             <ol class="be-breadcrumb breadcrumb">
                 <li><a href="#">首页</a></li>
-                <li class="active">基本布局</li>
             </ol>
             <!-- 正文区域 -->
             <div class="be-main" style="min-height: 790px;">
                 <div class="container-fluid">
                     <div class="main-content">
-                        <div class="row">
-                            <div class="col-sm-10">
-                                <div class="panel panel-info">
-                                    <div class="panel-heading"><h3 class="panel-title">查看本页源代码了解基本布局</h3></div>
-                                    <div class="panel-body">
-                                        <p>含注释。</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+
                     </div>
                 </div>
             </div>
             <!-- 页脚信息 -->
             <footer class="be-footer clearfix">
                 <p class="pull-left">© 2016 小米网平台研发部</p>
-                <!-- 随机轮播，用于展示心灵鸡汤或系统的一句话通知，也可以只保留一条文案显示 Slogan -->
                 <p class="pull-right">让每一个人都享受科技的乐趣</p>
-                <!--
-                <div class="pull-right">
-                  <ul class="quote-list" data-toggle="randomQuote">
-                    <li>生活没有目标，犹如航海没有罗盘。 ——罗斯金</li>
-                    <li>不要为成功而努力，要为做一个有价值的人而努力。 ——爱因斯坦</li>
-                    <li>混混噩噩的生活不值得过。 ——苏格拉底</li>
-                    <li>生命不止，奋斗不息。 ——卡莱尔</li>
-                  </ul>
-                </div>
-                -->
             </footer>
         </div>
         <!-- 侧栏导航 -->
@@ -99,35 +78,35 @@
                                 </a>
                             </li>
                             <!-- 二级菜单演示（展开） -->
-                            <li class="opened">
-                            <a href="#collapseSubMenu" data-toggle="collapse" title="点播管理">
-                            <i class="fa fa-cog"></i>
-                            <span class="text">点播管理</span>
-                            <b class="caret"></b>
-                            </a>
+                            {#<li class="">#}
+                                {#<a href="#collapseSubMenu" class="collapsed"  data-toggle="collapse" title="点播管理">#}
+                                    {#<i class="fa fa-cog"></i>#}
+                                    {#<span class="text">点播管理</span>#}
+                                    {#<b class="caret"></b>#}
+                                {#</a>#}
 
-                            <div class="sub-menu collapse in" id="collapseSubMenu">
-                            <span class="title">二级菜单演示</span>
-                            <ul class="sub-nav-list">
-                            <li class="active"><a href="/site/basic.html"><span class="text">基本布局</span></a>
-                            </li>
+                                {#<div class="sub-menu collapse" id="collapseSubMenu">#}
+                                    {#<span class="title">二级菜单演示</span>#}
+                                    {#<ul class="sub-nav-list">#}
+                                        {#<li class=""><a href="/site/basic.html"><span class="text">基本布局</span></a>#}
+                                        {#</li>#}
 
-                            <li>
-                            <a class="collapsed" href="#collapseThirdMenu" data-toggle="collapse">
-                            <span class="text">三级菜单演示</span>
-                            <b class="caret"></b>
-                            </a>
-                            <div class="sub-menu collapse" id="collapseThirdMenu">
-                            <span class="title">三级菜单演示</span>
-                            <ul class="sub-nav-list">
-                            <li><a href="#"><span class="text">三级菜单1</span></a></li>
-                            <li><a href="#"><span class="text">三级菜单2</span></a></li>
-                            </ul>
-                            </div>
-                            </li>
-                            </ul>
-                            </div>
-                            </li>
+                                        {#<li>#}
+                                            {#<a class="collapsed" href="#collapseThirdMenu" data-toggle="collapse">#}
+                                                {#<span class="text">三级菜单演示</span>#}
+                                                {#<b class="caret"></b>#}
+                                            {#</a>#}
+                                            {#<div class="sub-menu collapse" id="collapseThirdMenu">#}
+                                                {#<span class="title">三级菜单演示</span>#}
+                                                {#<ul class="sub-nav-list">#}
+                                                    {#<li><a href="#"><span class="text">三级菜单1</span></a></li>#}
+                                                    {#<li><a href="#"><span class="text">三级菜单2</span></a></li>#}
+                                                {#</ul>#}
+                                            {#</div>#}
+                                        {#</li>#}
+                                    {#</ul>#}
+                                {#</div>#}
+                            {#</li>#}
                             <!-- 二级菜单演示（收起） -->
                             <li>
                                 <a href="#collapseSubMenu2" class="collapsed" data-toggle="collapse" title="点播管理">
@@ -138,25 +117,25 @@
                                 <div class="sub-menu collapse" id="collapseSubMenu2">
                                     <span class="title">点播管理</span>
                                     <ul class="sub-nav-list">
-                                        <li><a href="#"><span class="text">点播列表</span></a></li>
-                                        <li><a href="#"><span class="text">添加分类</span></a></li>
+                                        <li><a href="{{ path("admin_vod_list") }}"><span class="text">点播列表</span></a></li>
+                                        <li><a href="{{ path("admin_vod_list") }}"><span class="text">添加分类</span></a></li>
                                     </ul>
                                 </div>
                             </li>
-                            <li>
-                                <a href="#collapseSubMenu3" class="collapsed" data-toggle="collapse" title="点播管理">
-                                    <i class="fa fa-folder-open"></i>
-                                    <span class="text">点播管理</span>
-                                    <b class="caret"></b>
-                                </a>
-                                <div class="sub-menu collapse" id="collapseSubMenu3">
-                                    <span class="title">点播管理</span>
-                                    <ul class="sub-nav-list">
-                                        <li><a href="#"><span class="text">点播列表</span></a></li>
-                                        <li><a href="#"><span class="text">添加分类</span></a></li>
-                                    </ul>
-                                </div>
-                            </li>
+                            {#<li>#}
+                                {#<a href="#collapseSubMenu3" class="collapsed" data-toggle="collapse" title="点播管理">#}
+                                    {#<i class="fa fa-folder-open"></i>#}
+                                    {#<span class="text">点播管理</span>#}
+                                    {#<b class="caret"></b>#}
+                                {#</a>#}
+                                {#<div class="sub-menu collapse" id="collapseSubMenu3">#}
+                                    {#<span class="title">点播管理</span>#}
+                                    {#<ul class="sub-nav-list">#}
+                                        {#<li><a href="#"><span class="text">点播列表</span></a></li>#}
+                                        {#<li><a href="#"><span class="text">添加分类</span></a></li>#}
+                                    {#</ul>#}
+                                {#</div>#}
+                            {#</li>#}
                         </ul>
                     </div>
                 </div>

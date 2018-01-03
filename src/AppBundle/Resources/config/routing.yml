@@ -20,6 +20,12 @@ home_vod_item:
 admin_page:
     path: /admin/show
     defaults: { _controller: AppBundle:Admin:showIndex }
+admin_vod_list:
+    path: /vod/list
+    defaults: { _controller: AppBundle:ManageVod:showList }
+admin_vod_list_data:
+    path: /vod/list/data
+    defaults: { _controller: AppBundle:ManageVod:getListData}
 login_check:
     path: /login_check
 logout:

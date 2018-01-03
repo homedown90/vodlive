@@ -4,7 +4,7 @@ namespace AppBundle\Tests\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class ManageVodControllerTest extends WebTestCase
+class VodManageControllerTest extends WebTestCase
 {
     public function testShowlist()
     {

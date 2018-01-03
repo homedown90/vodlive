@@ -8,6 +8,6 @@ class AdminController extends Controller
 {
     public function showIndexAction()
     {
-        return $this->render("@App/Admin/showindex.html.twig");
+        return $this->render("@App/Admin/index.html.twig");
     }
 }
