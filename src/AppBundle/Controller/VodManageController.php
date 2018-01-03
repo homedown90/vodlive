@@ -8,7 +8,7 @@ class VodManageController extends Controller
 {
     public function showListAction()
     {
-        return $this->render('@App/VodManage/vod_list_ajax.html.twig', array(
+        return $this->render('@App/VodManage/list.ajax.twig', array(
             // ...
         ));
     }
