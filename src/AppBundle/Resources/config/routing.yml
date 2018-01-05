@@ -24,8 +24,14 @@ admin_vod_list:
     path: /vod/list
     defaults: { _controller: AppBundle:VodManage:showList }
 admin_vod_list_data:
-    path: /vod/list/data
+    path: /vod/search
     defaults: { _controller: AppBundle:VodManage:getListData}
+admin_vod_add:
+    path: /vod/add
+    defaults: { _controller: AppBundle:VodManage:addVod }
+admin_class_show:
+    path: /class/show
+    defaults: { _controller: AppBundle:ClassManage:show }
 login_check:
     path: /login_check
 logout:
@@ -34,3 +40,7 @@ logout:
 show_list:
     path:     /showList
     defaults: { _controller: AppBundle:VodManage:showList }
+
+show:
+    path:     /show
+    defaults: { _controller: AppBundle:ClassManage:show }

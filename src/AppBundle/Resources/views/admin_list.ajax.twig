@@ -1,6 +1,12 @@
-{% block search %}
-{% endblock %}
-{% block datagrid %}
-{% endblock %}
-{% block page %}
-{% endblock %}
+<div class="row" id="admin_table_common">
+    <div class="col-sm-10" style="padding-top: 1rem;padding-bottom: 1rem">
+       {% block table_form %}
+        {% endblock %}
+    </div>
+    <div class="col-sm-10">
+        {% block table_table %}
+        {% endblock %}
+        {% block table_script %}
+        {% endblock %}
+    </div>
+</div>

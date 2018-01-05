@@ -1,6 +1,8 @@
 {% extends "base.html.twig" %}
 {% block stylesheets %}
     <link rel="stylesheet" href="{{ asset('/hiui/css/hiui.min.css') }}">
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/bootstrap-table.min.css">
 {% endblock %}
 {% block nav %}
     <nav id="nav" class="be-navbar navbar navbar-fixed-top">
@@ -54,6 +56,21 @@
             <div class="be-main" style="min-height: 790px;">
                 <div class="container-fluid">
                     <div class="main-content">
+                        <div class="col-sm-4">
+                            <label class="sr-only" for="select_demo23">国家</label>
+                            <select class="form-control" data-toggle="select" name="work" id="select_demo23">
+                                <option value="">请选择国家</option>
+                                <optgroup label="中国">
+                                    <option value="1">大陆</option>
+                                    <option value="2">港台地区</option>
+                                </optgroup>
+                                <optgroup label="海外">
+                                    <option value="3">印度</option>
+                                    <option value="4" disabled>波斯尼亚和黑塞哥维那共和国</option>
+                                </optgroup>
+                            </select>
+
+                        </div>
 
                     </div>
                 </div>
@@ -118,7 +135,7 @@
                                     <span class="title">点播管理</span>
                                     <ul class="sub-nav-list">
                                         <li><a href="{{ path("admin_vod_list") }}"><span class="text">点播列表</span></a></li>
-                                        <li><a href="{{ path("admin_vod_list") }}"><span class="text">添加分类</span></a></li>
+                                        <li><a href="{{ path("admin_class_show") }}"><span class="text">添加分类</span></a></li>
                                     </ul>
                                 </div>
                             </li>
@@ -142,8 +159,6 @@
             </div>
         </aside>
     </div>
-    <script src="{{ asset('/hiui/js/hiui.min.js') }}"></script>
-    <script src="{{ asset('/hiui/js/admin.index.js') }}"></script>
     <div id="hcDictContainer" style="display: none;">
         <div class="hcdict-poptop" id="hcdict-poptop" onselectstart="return false">
             <span class="hcdict-toptitle" id="hcdict-toptitle" title="" onselectstart="return false">
@@ -168,4 +183,10 @@
             </div>
         </div>
     </div>
+{% endblock %}
+{% block bodyjavascripts %}
+    <script src="{{ asset('/hiui/js/hiui.min.js') }}"></script>
+    <script src="{{ asset('/hiui/js/admin.index.js') }}"></script>
+    <script src="{{ asset('/hiui/js/admin.utile.js') }}"></script>
+    <script src="{{ asset('/hiui/js/lib/bootstrap-table/bootstrap-table.min.js') }}"></script>
 {% endblock %}

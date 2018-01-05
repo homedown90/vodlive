@@ -1,0 +1,67 @@
+<div class="raw">
+    <div class="col-sm-2">
+        <button class="btn btn-success">标准样式按钮</button>
+    </div>
+    <div class="col-sm-2">
+        <button class="btn btn-wf-primary">线框样式按钮</button>
+    </div>
+    <div class="col-sm-2">
+        <button class="btn btn-link-default">链接样式按钮</button>
+    </div>
+
+
+</div>
+<div class="raw">
+    <div class="col-sm-12">
+        <ul class="tree-list" data-toggle="tree">
+            <li>
+                <div class="tree-item" data-toggle="collapse" data-target="#tree-2-0">
+                    <label><input type="checkbox" value="20" data-target-name-prefix="2-0" name="2-0" /><span class="text">2-0</span></label>
+                    <b class="caret"></b>
+                </div>
+
+                <ul id="tree-2-0" class="sub-tree-list collapse in">
+                    <li><div class="tree-item"><label><input type="checkbox" value="100" name="2-0-0" /><span class="text">2-0-0</span></label></div></li>
+                    <li><div class="tree-item"><label><input type="checkbox" value="101" name="2-0-1" /><span class="text">2-0-1</span></label></div></li>
+                </ul>
+            </li>
+
+            <li><div class="tree-item"><label><input type="checkbox" value="11" name="2-1" /><span class="text">2-1</span></label></div></li>
+
+            <li>
+                <div class="tree-item collapsed" data-toggle="collapse" data-target="#tree-2-2">
+                    <label><input type="checkbox" value="12" data-target-name-prefix="2-2" name="2-2" /><span class="text">2-2</span></label>
+                    <b class="caret"></b>
+                </div>
+
+                <ul id="tree-2-2" class="sub-tree-list collapse">
+                    <li><div class="tree-item"><label><input type="checkbox" value="120" name="2-2-0" /><span class="text">2-2-0</span></label></div></li>
+                    <li>
+                        <div class="tree-item collapsed" data-toggle="collapse" data-target="#tree-2-2-1">
+                            <label><input type="checkbox" value="121" data-target-name-prefix="2-2-1" name="2-2-1" /><span class="text">2-2-1</span></label>
+                            <b class="caret"></b>
+                        </div>
+                        <ul id="tree-2-2-1" class="sub-tree-list collapse">
+                            <li><div class="tree-item"><label><input type="checkbox" value="1210" name="2-2-1-0" /><span class="text">2-2-1-0</span></label></div></li>
+                            <li><div class="tree-item"><label><input type="checkbox" value="1211" name="2-2-1-1" /><span class="text">2-2-1-1</span></label></div></li>
+                            <li><div class="tree-item"><label><input type="checkbox" value="1212" name="2-2-1-2" /><span class="text">特别特别特别长2-2-1-2不能折行不能折行不能折行不能折行不能折行不能折行不能折行不能折行不能折行不能折行</span></label></div></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <div class="tree-item collapsed" data-toggle="collapse" data-target="#tree-2-2-2">
+                            <label><input type="checkbox" value="122" data-target-name-prefix="2-2-2" name="2-2-2" /><span class="text">2-2-2</span></label>
+                            <b class="caret"></b>
+                        </div>
+                        <ul id="tree-2-2-2" class="sub-tree-list collapse">
+                            <li><div class="tree-item"><label><input type="checkbox" value="1220" name="2-2-2-0" /><span class="text">2-2-2-0</span></label></div></li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<script>
+    BE.initPlugin('tree', $(".tree-item"));
+</script>
