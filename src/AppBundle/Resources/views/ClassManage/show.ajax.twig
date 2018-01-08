@@ -1,67 +1,106 @@
-<div class="raw">
-    <div class="col-sm-2">
-        <button class="btn btn-success">标准样式按钮</button>
+<div class="row">
+    <div class="col-sm-12" style="padding-bottom: 1rem">
+        <button type="button" class="btn btn-primary">添加</button>
+        <button type="button" class="btn btn-primary">删除</button>
     </div>
-    <div class="col-sm-2">
-        <button class="btn btn-wf-primary">线框样式按钮</button>
+    <div class="col-sm-10">
+        <div id="tree"></div>
     </div>
-    <div class="col-sm-2">
-        <button class="btn btn-link-default">链接样式按钮</button>
-    </div>
-
-
-</div>
-<div class="raw">
-    <div class="col-sm-12">
-        <ul class="tree-list" data-toggle="tree">
-            <li>
-                <div class="tree-item" data-toggle="collapse" data-target="#tree-2-0">
-                    <label><input type="checkbox" value="20" data-target-name-prefix="2-0" name="2-0" /><span class="text">2-0</span></label>
-                    <b class="caret"></b>
-                </div>
-
-                <ul id="tree-2-0" class="sub-tree-list collapse in">
-                    <li><div class="tree-item"><label><input type="checkbox" value="100" name="2-0-0" /><span class="text">2-0-0</span></label></div></li>
-                    <li><div class="tree-item"><label><input type="checkbox" value="101" name="2-0-1" /><span class="text">2-0-1</span></label></div></li>
-                </ul>
-            </li>
-
-            <li><div class="tree-item"><label><input type="checkbox" value="11" name="2-1" /><span class="text">2-1</span></label></div></li>
-
-            <li>
-                <div class="tree-item collapsed" data-toggle="collapse" data-target="#tree-2-2">
-                    <label><input type="checkbox" value="12" data-target-name-prefix="2-2" name="2-2" /><span class="text">2-2</span></label>
-                    <b class="caret"></b>
-                </div>
-
-                <ul id="tree-2-2" class="sub-tree-list collapse">
-                    <li><div class="tree-item"><label><input type="checkbox" value="120" name="2-2-0" /><span class="text">2-2-0</span></label></div></li>
-                    <li>
-                        <div class="tree-item collapsed" data-toggle="collapse" data-target="#tree-2-2-1">
-                            <label><input type="checkbox" value="121" data-target-name-prefix="2-2-1" name="2-2-1" /><span class="text">2-2-1</span></label>
-                            <b class="caret"></b>
-                        </div>
-                        <ul id="tree-2-2-1" class="sub-tree-list collapse">
-                            <li><div class="tree-item"><label><input type="checkbox" value="1210" name="2-2-1-0" /><span class="text">2-2-1-0</span></label></div></li>
-                            <li><div class="tree-item"><label><input type="checkbox" value="1211" name="2-2-1-1" /><span class="text">2-2-1-1</span></label></div></li>
-                            <li><div class="tree-item"><label><input type="checkbox" value="1212" name="2-2-1-2" /><span class="text">特别特别特别长2-2-1-2不能折行不能折行不能折行不能折行不能折行不能折行不能折行不能折行不能折行不能折行</span></label></div></li>
-                        </ul>
-                    </li>
-                    <li>
-                        <div class="tree-item collapsed" data-toggle="collapse" data-target="#tree-2-2-2">
-                            <label><input type="checkbox" value="122" data-target-name-prefix="2-2-2" name="2-2-2" /><span class="text">2-2-2</span></label>
-                            <b class="caret"></b>
-                        </div>
-                        <ul id="tree-2-2-2" class="sub-tree-list collapse">
-                            <li><div class="tree-item"><label><input type="checkbox" value="1220" name="2-2-2-0" /><span class="text">2-2-2-0</span></label></div></li>
-                        </ul>
-                    </li>
-                </ul>
-            </li>
-        </ul>
-    </div>
+    <
 </div>
 
 <script>
-    BE.initPlugin('tree', $(".tree-item"));
+//# sourceURL=tset.js
+    $(function () {
+        function getTree() {
+            // Some logic to retrieve, or generate tree structure
+            var tree = [
+                {
+                    text: "Parent 1",
+                    isParent:true,
+                    parentId:0,
+                    nodeId:1,
+                    nodes: [
+                        {
+                            text: "Child 1",
+                            isParent:true,
+                            parentId:1,
+                            nodeId:2,
+                            nodes: [
+                                {
+                                    text: "Grandchild 1",
+                                    isParent:false,
+                                    nodeId:3,
+                                    parentId:2
+                                },
+                                {
+                                    text: "Grandchild 2",
+                                    isParent:false,
+                                    nodeId:4,
+                                    parentId:2
+                                }
+                            ]
+                        },
+                        {
+                            text: "Child 2",
+                            isParent:false,
+                            nodeId:5,
+                            parentId:1
+                        }
+                    ]
+                },
+                {
+                    text: "Parent 2",
+                    isParent:false,
+                    nodeId:6,
+                    parentId:0
+                },
+                {
+                    text: "Parent 3",
+                    isParent:false,
+                    nodeId:7,
+                    parentId:0
+                },
+                {
+                    text: "Parent 4",
+                    isParent:true,
+                    nodeId:8,
+                    parentId:0
+                },
+                {
+                    text: "Parent 5",
+                    isParent:false,
+                    nodeId:9,
+                    parentId:0
+                }
+            ];
+            tree = [{nodes: tree,parentId:-1,nodeId:0,isParent:true,text:"全部" }];
+            return tree;
+        }
+
+        $('#tree').treeview({
+            data: getTree(),
+            onSaveNode:function(event,node){
+                var parent = this.getNode(node.nodeId);
+                var $input = $('li[data-nodeid='+node.nodeId+']').find('input');
+                if($.trim($input.val())=="")
+                {
+                    alert("请填写完整");
+                    return;
+                }
+                $.post('{{ path('admin_class_add') }}',data,function(){
+
+                },'json');
+            },
+            onConcelNode:function(){
+                var parent = this.getNode(node.nodeId);
+
+                $('li[data-nodeid='+node.nodeId+']').remove();
+
+            },
+            onNodeCollapsed:function(event,node){
+
+            }
+        });
+    });
 </script>

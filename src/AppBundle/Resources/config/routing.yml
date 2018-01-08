@@ -32,6 +32,10 @@ admin_vod_add:
 admin_class_show:
     path: /class/show
     defaults: { _controller: AppBundle:ClassManage:show }
+admin_class_add:
+    path: /class/add
+    defaults: { _controller: AppBundle:ClassManage:add }
+
 login_check:
     path: /login_check
 logout:

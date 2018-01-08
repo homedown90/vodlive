@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Response;
 
 class ClassManageController extends Controller
 {
@@ -11,6 +12,10 @@ class ClassManageController extends Controller
         return $this->render('@App/ClassManage/show.ajax.twig', array(
             // ...
         ));
+    }
+    public function addAction()
+    {
+        return Response();
     }
 
 }
