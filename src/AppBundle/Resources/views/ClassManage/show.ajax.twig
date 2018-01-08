@@ -6,7 +6,7 @@
     <div class="col-sm-10">
         <div id="tree"></div>
     </div>
-    <
+
 </div>
 
 <script>
@@ -65,7 +65,8 @@
                     text: "Parent 4",
                     isParent:true,
                     nodeId:8,
-                    parentId:0
+                    parentId:0,
+                    nodes: []
                 },
                 {
                     text: "Parent 5",
@@ -81,21 +82,41 @@
         $('#tree').treeview({
             data: getTree(),
             onSaveNode:function(event,node){
-                var parent = this.getNode(node.nodeId);
+//                var parent = this.getNode(node.nodeId);
                 var $input = $('li[data-nodeid='+node.nodeId+']').find('input');
                 if($.trim($input.val())=="")
                 {
                     alert("请填写完整");
                     return;
                 }
-                $.post('{{ path('admin_class_add') }}',data,function(){
-
+                data = {};
+                $.post('{{ path('admin_class_add') }}',data,function(re){
+                        if(re.status){
+                            $.mywind('alert',{
+                                title: "操作提示",
+                                message: "成功",
+                                btnok: "确定",
+                                width: 200,
+                                auto: false,
+                            });
+                        }
                 },'json');
             },
-            onConcelNode:function(){
-                var parent = this.getNode(node.nodeId);
+            onConcelNode:function(event,node){
+//                var parent = this.getNode(node.nodeId);
+                $.mywind('confirm',{
+                    title: "操作提示",
+                    message: "提示内容",
+                    btnok: "确定",
+                    btncl: "取消",
+                    width: 200,
+                    auto: false,
+                    ok:function(){
+                        $('li[data-nodeid='+node.nodeId+']').remove();
+                        return true;
+                    }
+                });
 
-                $('li[data-nodeid='+node.nodeId+']').remove();
 
             },
             onNodeCollapsed:function(event,node){

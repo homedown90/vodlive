@@ -15,7 +15,12 @@ class ClassManageController extends Controller
     }
     public function addAction()
     {
-        return Response();
+        $data = array('status'=>1);
+        return new Response(
+            json_encode($data),
+            200,
+            array('Content-Type' => 'application/json')
+        );
     }
 
 }
