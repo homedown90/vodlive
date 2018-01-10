@@ -2,7 +2,7 @@
 $.extend({
     mywind : function(method,options){
     var html = '<div id="[Id]" class="modal fade" role="dialog" aria-labelledby="modalLabel">' +
-        '<div class="modal-dialog modal-sm">' +
+        '<div class="modal-dialog [modalStyle]">' +
         '<div class="modal-content">' +
         '<div class="modal-header">' +
         '<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>' +
@@ -29,6 +29,7 @@ $.extend({
         btnok: "确定",
         btncl: "取消",
         width: 200,
+        modalStyle:"modal-sm",
         auto: false,
         ok:function(){
             return true;
@@ -48,6 +49,7 @@ $.extend({
                 Title: options.title,
                 Message: options.message,
                 BtnOk: options.btnok,
+                modalStyle: options.modalStyle,
                 BtnCancel: options.btncl
             }[key];
         });
@@ -84,7 +86,7 @@ $.extend({
         confirm:function(context,options) {
             var id = init(options);
             var modal = $('#' + id);
-            modal.find('.ok').removeClass('btn-primary').addClass('btn-success');
+            modal.find('.ok').removeClass('btn-primary').addClass('btn-primary');
             modal.find('.cancel').show();
             modal.find('.ok').on('click',function(event){
                 var result = $.proxy(options.ok,this)(event,options);
@@ -100,7 +102,47 @@ $.extend({
                 }
 
             });
+        },
+        dialog: function(options) {
+            options = $.extend({}, {
+                title: "操作",
+                url: '',
+                message:"内容",
+                width: 800,
+                modalStyle:"modal-lg",
+                btnok: "确定",
+                btncl: "取消",
+                ok:function(){
+                    return true;
+                },
+                concel:function () {
+                    return true;
+                }
+            }, options || {});
+            var modalId = generateId();
+            var id = init(options);
+            var modal = $('#' + id);
+            modal.find('.ok').removeClass('btn-primary').addClass('btn-primary');
+            modal.find('.cancel').show();
+            modal.find('.ok').on('click',function(event){
+                var result = $.proxy(options.ok,this)(event,options);
+                if(result){
+                    $('#' + id).modal('hide').hide();
+                }
+
+            });
+            modal.find('.concel').on('click',function(event){
+                var result = $.proxy(options.concel,this)(event,options);
+                if(result){
+                    $('#' + id).modal('hide').hide();
+                }
+
+            });
+            if(!$.isEmptyObject(options.url)){
+                target.find('.modal-body').load(options.url);
+            }
         }
+
     };
         if (typeof(method) == "string") {
             var func = this.methods[method];
@@ -116,37 +158,6 @@ $.extend({
 
 
 
-        //     dialog: function(options) {
-        //         options = $.extend({}, {
-        //             title: 'title',
-        //             url: '',
-        //             width: 800,
-        //             height: 550,
-        //             onReady: function() {},
-        //             onShown: function(e) {}
-        //         }, options || {});
-        //         var modalId = generateId();
-        //
-        //         var content = dialogdHtml.replace(reg, function(node, key) {
-        //             return {
-        //                 Id: modalId,
-        //                 Title: options.title
-        //             }[key];
-        //         });
-        //         $('body').append(content);
-        //         var target = $('#' + modalId);
-        //         target.find('.modal-body').load(options.url);
-        //         if (options.onReady())
-        //             options.onReady.call(target);
-        //         target.modal();
-        //         target.on('shown.bs.modal', function(e) {
-        //             if (options.onReady(e))
-        //                 options.onReady.call(target, e);
-        //         });
-        //         target.on('hide.bs.modal', function(e) {
-        //             $('body').find(target).remove();
-        //         });
-        //     }
-        // }
+
 
 })(jQuery);*/

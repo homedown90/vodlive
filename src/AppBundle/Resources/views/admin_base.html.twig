@@ -1,194 +1,96 @@
 {% extends "base.html.twig" %}
+
 {% block stylesheets %}
     <link rel="stylesheet" href="{{ asset('/hiui/css/hiui.min.css') }}">
 
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/bootstrap-table.min.css">
 {% endblock %}
-{% block nav %}
-    <nav id="nav" class="be-navbar navbar navbar-fixed-top">
-        <div class="container-fluid">
-            <div class="navbar-header">
-                <a class="navbar-brand" href="/">HIUI 演示</a>
-                <a class="sidebar-toggle J_toggleSidebar" href="javascript: void(0);">
-                    <i class="fa fa-bars" aria-hidden="true"></i>
-                </a>
-            </div>
-            <div class="navbar-right">
-                <ul class="nav navbar-nav J_navList">
-                    <!-- 为 <li> 增加 class="nowrap" 可以限制栏宽度（最大宽度默认为 180px，可以为内部的 a 增加 style="max-width: 200px;" 进行覆盖） -->
-                    <li class="nowrap">
-                        <a style="max-width: 180px;" href="javascript: void(0);" id="dropdownMenuUser"
-                           data-toggle="dropdown" title="测试帐号名字很长怎么办呢">
-                            <i class="fa fa-user" aria-hidden="true"></i>
-                            <span class="text">测试帐号名字很长怎么办呢</span>
-                            <b class="caret"></b>
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuUser">
-                            <li class="profile">
-                                <a href="#" title="测试帐号名字很长怎么办呢">
-                                    <img class="avatar" src="http://micode.be.xiaomi.com/uploads/user/avatar/29/js.jpg"
-                                         alt="测试帐号">
-                                    <span class="username">测试帐号名字很长怎么办呢</span>
-                                </a>
-                            </li>
-                            <li role="separator" class="divider"></li>
-                            <li><a href="#"><i class="fa fa-user" aria-hidden="true"></i> 修改信息</a></li>
-                            <li><a href="#"><i class="fa fa-info" aria-hidden="true"></i> 其它信息</a></li>
-                            <li><a href="#"><i class="fa fa-sign-out" aria-hidden="true"></i> 退出</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
 
+{% block nav %}
+<nav id="nav" class="be-navbar navbar navbar-fixed-top">
+<div class="container-fluid">
+<div class="navbar-header">
+    <a class="navbar-brand" href="/">HIUI 演示</a>
+    <a class="sidebar-toggle J_toggleSidebar" href="javascript: void(0);"><i class="fa fa-bars" aria-hidden="true"></i></a>
+</div>
+<div class="navbar-right">
+    <ul class="nav navbar-nav J_navList">
+        <!-- 为 <li> 增加 class="nowrap" 可以限制栏宽度（最大宽度默认为 180px，可以为内部的 a 增加 style="max-width: 200px;" 进行覆盖） -->
+        <li class="nowrap">
+            <a style="max-width: 180px;" href="javascript: void(0);" id="dropdownMenuUser" data-toggle="dropdown" title="测试帐号名字很长怎么办呢">
+                <i class="fa fa-user" aria-hidden="true"></i><span class="text">测试帐号名字很长怎么办呢</span><b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuUser">
+                <li class="profile">
+                    <a href="#" title="测试帐号名字很长怎么办呢">
+                        <img class="avatar" src="http://micode.be.xiaomi.com/uploads/user/avatar/29/js.jpg" alt="测试帐号"><span class="username">测试帐号名字很长怎么办呢</span>
+                    </a>
+                </li>
+                <li role="separator" class="divider"></li>
+                <li><a href="#"><i class="fa fa-user" aria-hidden="true"></i> 修改信息</a></li>
+                <li><a href="#"><i class="fa fa-info" aria-hidden="true"></i> 其它信息</a></li>
+                <li><a href="#"><i class="fa fa-sign-out" aria-hidden="true"></i> 退出</a></li>
+            </ul>
+        </li>
+    </ul>
+</div>
+</div>
+</nav>
 {% endblock %}
 
 {% block content %}
-    <div id="main" class="be-wrapper">
-        <!-- 主体区域 -->
-        <div class="be-content">
-            <!-- 面包屑 -->
-            <ol class="be-breadcrumb breadcrumb">
-                <li><a href="#">首页</a></li>
-            </ol>
-            <!-- 正文区域 -->
-            <div class="be-main" style="min-height: 790px;">
-                <div class="container-fluid">
-                    <div class="main-content">
-                        <div class="col-sm-4">
-                            <label class="sr-only" for="select_demo23">国家</label>
-                            <select class="form-control" data-toggle="select" name="work" id="select_demo23">
-                                <option value="">请选择国家</option>
-                                <optgroup label="中国">
-                                    <option value="1">大陆</option>
-                                    <option value="2">港台地区</option>
-                                </optgroup>
-                                <optgroup label="海外">
-                                    <option value="3">印度</option>
-                                    <option value="4" disabled>波斯尼亚和黑塞哥维那共和国</option>
-                                </optgroup>
-                            </select>
+<div id="main" class="be-wrapper">
+    <!-- 主体区域 -->
+    <div class="be-content">
+        <!-- 面包屑 -->
+        <ol class="be-breadcrumb breadcrumb"><li><a href="#">首页</a></li></ol>
+        <!-- 正文区域 -->
+        <div class="be-main" style="min-height: 790px;">
+        <div class="container-fluid">
+        <div class="main-content">
 
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-            <!-- 页脚信息 -->
-            <footer class="be-footer clearfix">
-                <p class="pull-left">© 2016 小米网平台研发部</p>
-                <p class="pull-right">让每一个人都享受科技的乐趣</p>
-            </footer>
         </div>
-        <!-- 侧栏导航 -->
-        <aside class="be-sidebar" >
-            <div class="sidebar-wrapper">
-                <div class="sidebar-scroll">
-                    <div class="sidebar">
-                        <ul id="J_navList" class="nav-list" role="tablist" aria-multiselectable="true">
-                            <li>
-                                <a href="{{ path('homepage') }}" title="首页">
-                                    <i class="fa fa-home" aria-hidden="true">
-                                    </i>
-                                    <span class="text">首页</span>
-                                </a>
-                            </li>
-                            <!-- 二级菜单演示（展开） -->
-                            {#<li class="">#}
-                                {#<a href="#collapseSubMenu" class="collapsed"  data-toggle="collapse" title="点播管理">#}
-                                    {#<i class="fa fa-cog"></i>#}
-                                    {#<span class="text">点播管理</span>#}
-                                    {#<b class="caret"></b>#}
-                                {#</a>#}
-
-                                {#<div class="sub-menu collapse" id="collapseSubMenu">#}
-                                    {#<span class="title">二级菜单演示</span>#}
-                                    {#<ul class="sub-nav-list">#}
-                                        {#<li class=""><a href="/site/basic.html"><span class="text">基本布局</span></a>#}
-                                        {#</li>#}
-
-                                        {#<li>#}
-                                            {#<a class="collapsed" href="#collapseThirdMenu" data-toggle="collapse">#}
-                                                {#<span class="text">三级菜单演示</span>#}
-                                                {#<b class="caret"></b>#}
-                                            {#</a>#}
-                                            {#<div class="sub-menu collapse" id="collapseThirdMenu">#}
-                                                {#<span class="title">三级菜单演示</span>#}
-                                                {#<ul class="sub-nav-list">#}
-                                                    {#<li><a href="#"><span class="text">三级菜单1</span></a></li>#}
-                                                    {#<li><a href="#"><span class="text">三级菜单2</span></a></li>#}
-                                                {#</ul>#}
-                                            {#</div>#}
-                                        {#</li>#}
-                                    {#</ul>#}
-                                {#</div>#}
-                            {#</li>#}
-                            <!-- 二级菜单演示（收起） -->
-                            <li>
-                                <a href="#collapseSubMenu2" class="collapsed" data-toggle="collapse" title="点播管理">
-                                    <i class="fa fa-folder-open"></i>
-                                    <span class="text">点播管理</span>
-                                    <b class="caret"></b>
-                                </a>
-                                <div class="sub-menu collapse" id="collapseSubMenu2">
-                                    <span class="title">点播管理</span>
-                                    <ul class="sub-nav-list">
-                                        <li><a href="{{ path("admin_vod_list") }}"><span class="text">点播列表</span></a></li>
-                                        <li><a href="{{ path("admin_class_show") }}"><span class="text">添加分类</span></a></li>
-                                    </ul>
-                                </div>
-                            </li>
-                            {#<li>#}
-                                {#<a href="#collapseSubMenu3" class="collapsed" data-toggle="collapse" title="点播管理">#}
-                                    {#<i class="fa fa-folder-open"></i>#}
-                                    {#<span class="text">点播管理</span>#}
-                                    {#<b class="caret"></b>#}
-                                {#</a>#}
-                                {#<div class="sub-menu collapse" id="collapseSubMenu3">#}
-                                    {#<span class="title">点播管理</span>#}
-                                    {#<ul class="sub-nav-list">#}
-                                        {#<li><a href="#"><span class="text">点播列表</span></a></li>#}
-                                        {#<li><a href="#"><span class="text">添加分类</span></a></li>#}
-                                    {#</ul>#}
-                                {#</div>#}
-                            {#</li>#}
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </aside>
+        </div>
+        </div>
+        <!-- 页脚信息 -->
+        <footer class="be-footer clearfix">
+            <p class="pull-left">© 2016 小米网平台研发部</p><p class="pull-right">让每一个人都享受科技的乐趣</p>
+        </footer>
     </div>
-    <div id="hcDictContainer" style="display: none;">
-        <div class="hcdict-poptop" id="hcdict-poptop" onselectstart="return false">
-            <span class="hcdict-toptitle" id="hcdict-toptitle" title="" onselectstart="return false">
-
-            </span>
-            <span  class="hcdict-topdetail">
-                <a id="hcdict-detail" href="" target="_blank">详细&gt;&gt;</a>
-            </span>
-            <span class="hcdict-btnclose" id="hcdict-btnClose" title="关闭(esc)">
-
-            </span>
-        </div>
-        <div class="hcdict-popcont" id="hcdict-popcont">
-            <iframe id="hcDictContent" scrolling="no" frameborder="0" allowtransparency="false" src="about:blank"></iframe>
-        </div>
-        <div class="hcdict-popbottom" id="hcdict-popbottom">
-            <div class="hcdict-fixer" id="hcdict-fixer" title="锁定位置"></div>
-            <div class="hcdict-btm-adwrapper">
-                <div class="hcdict-btm-ad" id="hcdict-btm-ad">
-                    <div slot="39">&nbsp;</div>
+    <!-- 侧栏导航 -->
+    <aside class="be-sidebar" >
+    <div class="sidebar-wrapper">
+    <div class="sidebar-scroll">
+    <div class="sidebar">
+        <ul id="J_navList" class="nav-list" role="tablist" aria-multiselectable="true">
+            <li><a href="{{ path('homepage') }}" title="首页"><i class="fa fa-home" aria-hidden="true"></i><span class="text">首页</span></a></li>
+            <!-- 二级菜单演示（收起） -->
+            <li><a href="#collapseSubMenu2" class="collapsed" data-toggle="collapse" title="点播管理"><i class="fa fa-folder-open"></i><span class="text">点播管理</span><b class="caret"></b></a>
+                <div class="sub-menu collapse" id="collapseSubMenu2">
+                    <span class="title">点播管理</span>
+                    <ul class="sub-nav-list">
+                        <li><a href="{{ path("admin_vod_list") }}"><span class="text">点播列表</span></a></li>
+                        <li><a href="{{ path("admin_class_show") }}"><span class="text">添加分类</span></a></li>
+                    </ul>
                 </div>
-            </div>
-        </div>
+            </li>
+        </ul>
     </div>
+    </div>
+    </div>
+    </aside>
+</div>
 {% endblock %}
+
 {% block bodyjavascripts %}
+
     <script src="{{ asset('/hiui/js/hiui.min.js') }}"></script>
+    <script src="{{ asset('/hiui/js/lib/select2/select2.min.js') }}"></script>
+    <script src="{{ asset('/hiui/js/lib/select2/select2.bundle.min.js') }}"></script>
     <script src="{{ asset('/hiui/js/admin.index.js') }}"></script>
     <script src="{{ asset('/hiui/js/admin.utile.js') }}"></script>
     <script src="{{ asset('/hiui/js/lib/bootstrap-table/bootstrap-table.min.js') }}"></script>
     <script src="{{ asset('/hiui/js/bootstrap-treeview.js') }}"></script>
     <script src="{{ asset('/hiui/js/admin.extend.js') }}"></script>
+    <script src="{{ asset('/hiui/js/select2tree.js') }}"></script>
 {% endblock %}

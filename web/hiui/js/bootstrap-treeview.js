@@ -72,12 +72,18 @@
 		onSearchCleared: undefined,
 		//添加节点保存事件
 		onSaveNode: undefined,
-		onConcelNode: undefined
+		onConcelNode: undefined,
+		onEditNode: undefined
 	};
 
 	_default.options = {
 		silent: false,
-		ignoreChildren: false
+		ignoreChildren: false,
+		edit:function(event,node){
+			var _text = $(this.$element).find('li[data-nodeid='+node.nodeId+']').find("input").val();
+            $(this.$element).find('li[data-nodeid='+node.nodeId+']').text(_text);
+			return true;
+		}
 	};
 
 	_default.searchOptions = {
@@ -148,7 +154,10 @@
 			clearSearch: $.proxy(this.clearSearch, this),
 
 			//add node methods
-			addTreeNode:$.proxy(this.addTreeNode,this)
+			addTreeNode:$.proxy(this.addTreeNode,this),
+			removeNode:$.proxy(this.removeNode,this),
+            saveNew:$.proxy(this.saveNew,this),
+            editTreeNode:$.proxy(this.editTreeNode,this)
 		};
 	};
 
@@ -156,22 +165,33 @@
 
 		this.tree = [];
 		this.nodes = [];
-
-		if (options.data) {
+		var _this = this;
+		if (!$.isEmptyObject(options.data)) {
 			if (typeof options.data === 'string') {
 				options.data = $.parseJSON(options.data);
 			}
 			this.tree = $.extend(true, [], options.data);
 			delete options.data;
+            _this.initTree(options);
+		}else {
+			//异步请求数据
+			$.post(options.url,{},function (re) {
+                options.data = re;
+                _this.tree = $.extend(true, [], options.data);
+                delete options.data;
+                _this.initTree(options);
+            },'json');
 		}
-		this.options = $.extend({}, _default.settings, options);
 
-		this.destroy();
-		this.subscribeEvents();
-		this.setInitialStates({nodes:this.tree} , 0);
-		this.render();
 	};
+	Tree.prototype.initTree = function (options) {
+        this.options = $.extend({}, _default.settings, options);
 
+        this.destroy();
+        this.subscribeEvents();
+        this.setInitialStates({nodes:this.tree} , 0);
+        this.render();
+    }
 	Tree.prototype.remove = function () {
 		this.destroy();
 		$.removeData(this, pluginName);
@@ -259,6 +279,9 @@
 		}
 		if (typeof (this.options.onConcelNode) === 'function') {
 			this.$element.on('concelNode', this.options.onConcelNode);
+		}
+		if (typeof (this.options.onEditNode) === 'function') {
+			this.$element.on('editNode', this.options.onEditNode);
 		}
 	};
 
@@ -428,12 +451,15 @@
 					this.setSelectedState(node, false, options);
 				}, this));
 			}
-
+			if(this.nodes[-2]&& this.nodes[-2].state.selected && node.nodeId != -2){
+                this.nodes[-2].state.selected = false;
+			}
 			// Continue selecting node
 			node.state.selected = true;
 			if (!options.silent) {
 				this.$element.trigger('nodeSelected', $.extend(true, {}, node));
 			}
+
 		}
 		else {
 
@@ -519,143 +545,235 @@
 		// Build tree
 		this.buildTree(this.tree, 0);
 	};
-	Tree.prototype.addTreeNode = function(isParent,nodeId){
-		var parent = this.nodes[nodeId];
-		//展开添加的节点
-        this.expandNode(nodeId);
-        var $parent = $('li[data-nodeId='+nodeId+']');
-		if(!parent){
-			alert('请选择父类或添加父类后再添加');
-		}
-		var level = parent.level;
-		var _this = this;
-		var node = {isParent:isParent,nodes:[],text:"add class",nodeId:-2,parentId:nodeId};
-        function addNodes(node) {
-            if (!node.hasOwnProperty('selectable')) {
-                node.selectable = true;
-            }
+	Tree.prototype.renderAddNode = function(node){
+		var parent = this.nodes[node.parentId];
+		var level = parent.level+1;
+        var _this = this;
+        node.level = level;
+        //展开添加的节点
+        if (!node.hasOwnProperty('selectable')) {
+            node.selectable = true;
+        }
 
-            // where provided we should preserve states
-            node.state = node.state || {};
+        // where provided we should preserve states
+        node.state = node.state || {};
 
-            // set checked state; unless set always false
-            if (!node.state.hasOwnProperty('checked')) {
-                node.state.checked = false;
-            }
+        // set checked state; unless set always false
+        if (!node.state.hasOwnProperty('checked')) {
+            node.state.checked = false;
+        }
 
-            // set enabled state; unless set always false
-            if (!node.state.hasOwnProperty('disabled')) {
-                node.state.disabled = false;
-            }
+        // set enabled state; unless set always false
+        if (!node.state.hasOwnProperty('disabled')) {
+            node.state.disabled = false;
+        }
 
-            // set expanded state; if not provided based on levels
-            if (!node.state.hasOwnProperty('expanded')) {
-                if (!node.state.disabled &&
-                    (level < _this.options.levels) &&
-                    (node.nodes && node.nodes.length > 0)) {
-                    node.state.expanded = true;
-                }
-                else {
-                    node.state.expanded = false;
-                }
-            }
-
-            // set selected state; unless set always false
-            if (!node.state.hasOwnProperty('selected')) {
-                node.state.selected = false;
-            }
-            var treeItem = $(_this.template.item)
-                .addClass('node-' + _this.elementId)
-                .addClass(node.state.checked ? 'node-checked' : '')
-                .addClass(node.state.disabled ? 'node-disabled': '')
-                .addClass(node.state.selected ? 'node-selected' : '')
-                .addClass(node.searchResult ? 'search-result' : '')
-                .attr('data-nodeid', node.nodeId)
-                .attr('style', _this.buildStyleOverride(node));
-
-            // Add indent/spacer to mimic tree structure
-            for (var i = 0; i < (level - 1); i++) {
-                treeItem.append(_this.template.indent);
-            }
-
-            // Add expand, collapse or empty spacer icons
-            var classList = [];
-            if (isParent) {
-                classList.push('expand-icon');
-                if (node.state.expanded) {
-                    classList.push(_this.options.collapseIcon);
-                }
-                else {
-                    classList.push(_this.options.expandIcon);
-                }
+        // set expanded state; if not provided based on levels
+        if (!node.state.hasOwnProperty('expanded')) {
+            if (!node.state.disabled &&
+                (level < _this.options.levels) &&
+                (node.nodes && node.nodes.length > 0)) {
+                node.state.expanded = true;
             }
             else {
-                classList.push(_this.options.emptyIcon);
+                node.state.expanded = false;
+            }
+        }
+
+        // set selected state; unless set always false
+        if (!node.state.hasOwnProperty('selected')) {
+            node.state.selected = false;
+        }
+        var treeItem = $(_this.template.item)
+            .addClass('node-' + _this.elementId)
+            .addClass(node.state.checked ? 'node-checked' : '')
+            .addClass(node.state.disabled ? 'node-disabled': '')
+            .addClass(node.state.selected ? 'node-selected' : '')
+            .addClass(node.searchResult ? 'search-result' : '')
+            .attr('data-nodeid', node.nodeId)
+            .attr('style', _this.buildStyleOverride(node));
+
+        // Add indent/spacer to mimic tree structure
+        for (var i = 0; i < (level - 1); i++) {
+            treeItem.append(_this.template.indent);
+        }
+
+        // Add expand, collapse or empty spacer icons
+        var classList = [];
+        if (node.isParent) {
+            classList.push('expand-icon');
+            if (node.state.expanded) {
+                classList.push(_this.options.collapseIcon);
+            }
+            else {
+                classList.push(_this.options.expandIcon);
+            }
+        }
+        else {
+            classList.push(_this.options.emptyIcon);
+        }
+
+        treeItem
+            .append($(_this.template.icon)
+                .addClass(classList.join(' '))
+            );
+
+
+        // Add node icon
+        if (_this.options.showIcon) {
+
+            var classList = ['node-icon'];
+
+            classList.push(node.icon || _this.options.nodeIcon);
+            if (node.state.selected) {
+                classList.pop();
+                classList.push(node.selectedIcon || _this.options.selectedIcon ||
+                    node.icon || _this.options.nodeIcon);
             }
 
             treeItem
                 .append($(_this.template.icon)
                     .addClass(classList.join(' '))
                 );
+        }
 
+        // Add check / unchecked icon
+        if (_this.options.showCheckbox) {
 
-            // Add node icon
-            if (_this.options.showIcon) {
+            var classList = ['check-icon'];
+            if (node.state.checked) {
+                classList.push(_this.options.checkedIcon);
+            }
+            else {
+                classList.push(_this.options.uncheckedIcon);
+            }
 
-                var classList = ['node-icon'];
+            treeItem
+                .append($(_this.template.icon)
+                    .addClass(classList.join(' '))
+                );
+        }
 
-                classList.push(node.icon || _this.options.nodeIcon);
-                if (node.state.selected) {
-                    classList.pop();
-                    classList.push(node.selectedIcon || _this.options.selectedIcon ||
-                        node.icon || _this.options.nodeIcon);
-                }
-
+        treeItem.append($(_this.template.input));
+        // Add tags as badges
+        if (_this.options.showTags && node.tags) {
+            $.each(node.tags, function addTag(id, tag) {
                 treeItem
-                    .append($(_this.template.icon)
-                        .addClass(classList.join(' '))
+                    .append($(_this.template.badge)
+                        .append(tag)
                     );
-            }
-
-            // Add check / unchecked icon
-            if (_this.options.showCheckbox) {
-
-                var classList = ['check-icon'];
-                if (node.state.checked) {
-                    classList.push(_this.options.checkedIcon);
-                }
-                else {
-                    classList.push(_this.options.uncheckedIcon);
-                }
-
-                treeItem
-                    .append($(_this.template.icon)
-                        .addClass(classList.join(' '))
-                    );
-            }
-
-            treeItem.append($(_this.template.input));
-            // Add tags as badges
-            if (_this.options.showTags && node.tags) {
-                $.each(node.tags, function addTag(id, tag) {
-                    treeItem
-                        .append($(_this.template.badge)
-                            .append(tag)
-                        );
-                });
-            }
-
-            // Add item to the tree
+            });
+        }
+        /*var $parent = $('li[data-nodeId='+parent.nodeId+']');
+        // Add item to the tree
+        if(parent.children_total == 0){
+            $parent.after(treeItem);
+        }else{
             $parent.nextAll(':eq('+(parent.children_total-1)+')').after(treeItem);
-		}
-        addNodes(node);
-        $('li[data-nodeId="-2"]').find("button.save").on('click',function(){
-			$(this).trigger('saveNode',[$.extend(true,{},node)]);
-		});
-        $('li[data-nodeId="-2"]').find("button.concel").on('click',function(){
+        }*/
+        _this.$wrapper.append(treeItem);
+        $('li[data-nodeId="-2"]').find("button.save").on('click',function(event){
+        	event.stopPropagation();
+            $(this).trigger('saveNode',[$.extend(true,{},node)]);
+        });
+        $('li[data-nodeId="-2"]').find("input").on({'click':function(event){
+        	event.stopPropagation();
+        },'blur':function(event){event.stopPropagation();}});
+        $('li[data-nodeId="-2"]').find("button.concel").on('click',function(event){
+            event.stopPropagation();
             $(this).trigger('concelNode',[$.extend(true,{},node)]);
+        });
+	};
+
+	Tree.prototype.addTreeNode = function(){
+		var parent = this.getSelected();
+        if($.isEmptyObject(parent)){
+            $.mywind('alert',{title: "添加提示", message: "请选择父类",});
+            return;
+        }
+        if(parent[0].isParent == false){
+            $.mywind('alert',{title: "添加提示", message: "只有父类能够添加",});
+            return;
+        }
+
+		if(this.nodes[-2]){
+            $.mywind('alert',{title: "添加提示", message: "请先保存节点再重新添加",});
+            return;
+		}
+        parent = parent[0];
+
+		this.expandNode(parent.nodeId);
+        var isParent = false;
+        if(parent.nodeId == 0)
+        {
+            isParent = true;
+        }
+        var node = {isParent:isParent,nodes:[],text:"add class",nodeId:-2,parentId:parent.nodeId};
+        parent.nodes.push(node);
+        this.nodes[node.nodeId] = node;
+        this.render();
+	};
+	Tree.prototype.editTreeNode = function(){
+		if(this.nodes[-2]){
+            $.mywind('alert',{title: "添加提示", message: "请先保存节点再重新添加",});
+            return;
+		}
+        var node = this.getSelected();
+        if($.isEmptyObject(node)){
+            $.mywind('alert',{title: "添加提示", message: "请选择编辑的节点",});
+            return;
+        }
+        node = node[0];
+        var _this = this;
+        var li_html = "";
+        $.each($(this.$element).find('li[data-nodeid='+node.nodeId+']').children(),function (i,child_dom) {
+            li_html += $(child_dom).prop('outerHTML');
+        });
+        $(this.$element).find('li[data-nodeid='+node.nodeId+']').html(li_html+this.template.edit);
+        $(this.$element).find('li[data-nodeid='+node.nodeId+']').find('input').val(node.text);
+        $(this.$element).find('li[data-nodeid='+node.nodeId+']').find('input').on('click',function(event){
+            event.stopPropagation();
+		});
+        $(this.$element).find('li[data-nodeid='+node.nodeId+']').find('button[name=save]').on('click',function(event){
+            event.stopPropagation();
+            $(this).trigger('editNode',[$.extend(true,{},node)]);
+        });
+		$(this.$element).find('li[data-nodeid='+node.nodeId+']').find('button[name=concel]').on('click',function(event){
+            event.stopPropagation();
+            $(_this.$element).find('li[data-nodeid='+node.nodeId+']').find('input').remove();
+            $(_this.$element).find('li[data-nodeid='+node.nodeId+']').find('button').remove();
+            $(_this.$element).find('li[data-nodeid='+node.nodeId+']').append(node.text);
 		});
 	};
+    Tree.prototype.traversalTree = function (tree,fNodeId,vNode){
+    	var _this = this;
+        $.each(tree,function(i,tNode){
+            if(tNode.nodeId == fNodeId){
+            	if(vNode){
+                    tree[i] = vNode;
+				}else{
+                    tree.splice(i,1);
+				}
+            }else{
+                _this.traversalTree(tree[i].nodes,fNodeId,vNode);
+            }
+        });
+    };
+    Tree.prototype.removeNode = function (nodeId) {
+		$(this.$element).find('li[data-nodeid='+nodeId+']').remove();
+        this.traversalTree(this.tree,nodeId);
+		delete this.nodes[nodeId];
+    };
+    Tree.prototype.saveNew = function (re,isEdit) {
+    	var nodeId = !isEdit?-2:re.nodeId;
+		$(this.$element).find('li[data-nodeid='+nodeId+']').find('input').remove();
+		$(this.$element).find('li[data-nodeid='+nodeId+']').find('button').remove();
+		$(this.$element).find('li[data-nodeid='+nodeId+']').attr('data-nodeid',re.nodeId).append(re.text);
+
+		this.nodes[re.nodeId] = $.extend(true,{},this.nodes[nodeId],{"nodeId":re.nodeId,"text":re.text});
+        this.traversalTree(this.tree,nodeId,this.nodes[re.nodeId]);
+        if(!isEdit){delete this.nodes[nodeId];}
+    };
 	// Starting from the root node, and recursing down the
 	// structure we build the tree one node at a time
 	Tree.prototype.buildTree = function (nodes, level) {
@@ -665,7 +783,10 @@
 
 		var _this = this;
 		$.each(nodes, function addNodes(id, node) {
-
+			if(node.nodeId == -2){
+				_this.renderAddNode(node);
+				return;
+			}
 			var treeItem = $(_this.template.item)
 				.addClass('node-' + _this.elementId)
 				.addClass(node.state.checked ? 'node-checked' : '')
@@ -848,7 +969,8 @@
 		indent: '<span class="indent"></span>',
 		icon: '<span class="icon"></span>',
 		link: '<a href="#" style="color:inherit;"></a>',
-		input: '  <input type="text" ><button type="button" class="btn btn-info save" >保存</button><button type="button" class="btn btn-info concel">取消</button>' ,
+		input: '  <input type="text" style="color:#000" ><button type="button" class="btn btn-info save" >保存</button><button type="button" class="btn btn-info concel">取消</button>' ,
+		edit: '  <input type="text" style="color:#000" ><button type="button" class="btn btn-info" name="save" >保存</button><button type="button" class="btn btn-info" name="concel" >取消</button>' ,
         // '<div class="input-group mb-3">' +
         // '  <div class="input-group-prepend">' +
         // '    <button class="btn btn-outline-secondary" type="button">Button</button>' +
@@ -1404,7 +1526,7 @@
 				result = _this;
 			}
 			else {
-				$.data(this, pluginName, new Tree(this, $.extend(true, {}, options)));
+				$.data(this, pluginName, new Tree(this, $.extend(true, {data:[],url:''}, options)));
 			}
 		});
 

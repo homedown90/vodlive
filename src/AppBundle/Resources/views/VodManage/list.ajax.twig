@@ -36,6 +36,7 @@
                 </form>
             </div>
             <div class="col-sm-4">
+                <button class="btn btn-default" id="add_dg">默认按钮</button>
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add_dialog">添加</button>
                 <!-- Modal -->
                 <div class="modal fade" id="add_dialog" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
@@ -189,6 +190,10 @@
                 $('#add_dialog').modal('hide');
             });
         });
+        $('#add_dg').on('click',function (event) {
+            event.preventDefault();
+            $.mywind('dialog');
+        })
         BE.initPlugin('upload', $("#add_dialog_upload"));
     </script>
 {% endblock %}

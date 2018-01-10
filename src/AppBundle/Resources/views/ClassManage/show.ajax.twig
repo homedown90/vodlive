@@ -1,127 +1,98 @@
 <div class="row">
-    <div class="col-sm-12" style="padding-bottom: 1rem">
-        <button type="button" class="btn btn-primary">添加</button>
-        <button type="button" class="btn btn-primary">删除</button>
+    <div class="col-sm-12" style="padding-bottom: 1rem" id="vod_class_manage">
+        <button type="button" class="btn btn-primary" name="classAdd">添加</button>
+        <button type="button" class="btn btn-primary" name="classDel">删除</button>
+        <button type="button" class="btn btn-primary" name="classEdit">编辑</button>
     </div>
     <div class="col-sm-10">
-        <div id="tree"></div>
+        <div id="vod_class_tree"></div>
     </div>
-
 </div>
 
 <script>
 //# sourceURL=tset.js
-    $(function () {
-        function getTree() {
-            // Some logic to retrieve, or generate tree structure
-            var tree = [
+$(function () {
+    var $tree = $('#vod_class_tree');
+    //-------------------分类初始化-----------
+    $('#vod_class_tree').treeview({
+        url:"{{ path('admin_class_data') }}",
+//        data: getTree(),
+        onEditNode:function(event,node){
+            $.post("{{ path('admin_class_edit') }}",data,function (re) {
+                re.status = 0;
+                re.text = "测试11312321";
+                re.nodeId = node.nodeId;
+                if(!re.status)
                 {
-                    text: "Parent 1",
-                    isParent:true,
-                    parentId:0,
-                    nodeId:1,
-                    nodes: [
-                        {
-                            text: "Child 1",
-                            isParent:true,
-                            parentId:1,
-                            nodeId:2,
-                            nodes: [
-                                {
-                                    text: "Grandchild 1",
-                                    isParent:false,
-                                    nodeId:3,
-                                    parentId:2
-                                },
-                                {
-                                    text: "Grandchild 2",
-                                    isParent:false,
-                                    nodeId:4,
-                                    parentId:2
-                                }
-                            ]
-                        },
-                        {
-                            text: "Child 2",
-                            isParent:false,
-                            nodeId:5,
-                            parentId:1
-                        }
-                    ]
-                },
-                {
-                    text: "Parent 2",
-                    isParent:false,
-                    nodeId:6,
-                    parentId:0
-                },
-                {
-                    text: "Parent 3",
-                    isParent:false,
-                    nodeId:7,
-                    parentId:0
-                },
-                {
-                    text: "Parent 4",
-                    isParent:true,
-                    nodeId:8,
-                    parentId:0,
-                    nodes: []
-                },
-                {
-                    text: "Parent 5",
-                    isParent:false,
-                    nodeId:9,
-                    parentId:0
+                    $tree.treeview('saveNew',[re,true]);
+                }else{
+                    $.mywind('alert',{title: "操作提示", message: re.msg});
                 }
-            ];
-            tree = [{nodes: tree,parentId:-1,nodeId:0,isParent:true,text:"全部" }];
-            return tree;
+            },'json');
+
+        },
+        onSaveNode:function(event,node){
+            var $input = $('li[data-nodeid='+node.nodeId+']').find('input');
+            if($.trim($input.val())=="") {$.mywind('alert',{title: "操作提示", message: "请填写完整" });return;}
+            data = {};
+
+            $.post('{{ path('admin_class_add') }}',data,function(re){
+                re.status = 0;
+                re.nodeId = Date.parse(new Date())/1000%100;
+                re.text = "测试";
+                if(!re.status){
+                    $tree.treeview('saveNew',re);
+                    $.mywind('alert',{title: "操作提示", message: "成功", btnok: "确定"});
+                }
+            },'json');
+        },
+        onConcelNode:function(event,node){
+            $.mywind('confirm',{
+                title: "操作提示",
+                message: "提示内容",
+                ok:function(){
+                    $tree.treeview('removeNode',node.nodeId);return true;
+                }
+            });
+        }
+    });
+    $("#vod_class_manage").find('button[name="classAdd"]').on('click',function () {
+        $tree.treeview('addTreeNode');
+    });
+    $("#vod_class_manage").find('button[name="classDel"]').on('click',function () {
+        var _editeNode =  $tree.treeview('getNode',-2);
+        if(_editeNode.nodeId == -2){
+            $.mywind('alert',{title: "添加提示", message: "请先编辑完成节点再删除"});
+            return;
+        }
+        var node = $tree.treeview('getSelected');
+        if($.isEmptyObject(node)){
+            $.mywind('alert',{title: "添加提示", message: "请选择节点"});
+            return;
+        }
+        node = node[0];
+        if(node.nodeId == 0)
+        {
+            $.mywind('alert',{title: "添加提示", message: "不能删除全部"});
+            return;
+        }
+        if(!$.isEmptyObject(node.nodes))
+        {
+            $.mywind('alert',{title: "添加提示", message: "请先删除子类,再删除父类"});
+            return;
         }
 
-        $('#tree').treeview({
-            data: getTree(),
-            onSaveNode:function(event,node){
-//                var parent = this.getNode(node.nodeId);
-                var $input = $('li[data-nodeid='+node.nodeId+']').find('input');
-                if($.trim($input.val())=="")
-                {
-                    alert("请填写完整");
-                    return;
-                }
-                data = {};
-                $.post('{{ path('admin_class_add') }}',data,function(re){
-                        if(re.status){
-                            $.mywind('alert',{
-                                title: "操作提示",
-                                message: "成功",
-                                btnok: "确定",
-                                width: 200,
-                                auto: false,
-                            });
-                        }
-                },'json');
-            },
-            onConcelNode:function(event,node){
-//                var parent = this.getNode(node.nodeId);
-                $.mywind('confirm',{
-                    title: "操作提示",
-                    message: "提示内容",
-                    btnok: "确定",
-                    btncl: "取消",
-                    width: 200,
-                    auto: false,
-                    ok:function(){
-                        $('li[data-nodeid='+node.nodeId+']').remove();
-                        return true;
-                    }
-                });
-
-
-            },
-            onNodeCollapsed:function(event,node){
-
+        $.post("{{ path('admin_class_delete') }}",data,function (re) {
+            re.status = 0;
+            if(!re.status){
+                $tree.treeview('removeNode',node.nodeId)
+            }else{
+                $.mywind('alert',{title: "添加提示", message: re.msg});
             }
-        });
+        },'json')
     });
+    $("#vod_class_manage").find('button[name="classEdit"]').on('click',function () {
+        $tree.treeview('editTreeNode');
+    });
+});
 </script>

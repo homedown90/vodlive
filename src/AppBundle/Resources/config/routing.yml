@@ -7,19 +7,22 @@ index:
 login:
     path:     /login
     defaults: { _controller: AppBundle:Security:login }
+#-------------------------首页显示---------------------------------
 home_page:
     path: /
     defaults: { _controller: AppBundle:Home:index }
+#----------------------------点播显示--------------------------------
 home_vod_list:
     path: /vod
     defaults: { _controller: AppBundle:VodShow:showVodList }
 home_vod_item:
     path: /vod/item
     defaults: { _controller: AppBundle:VodShow:showVodItem }
-
+#-----------------------------管理后台主页---------------------------
 admin_page:
-    path: /admin/show
+    path: /admin
     defaults: { _controller: AppBundle:Admin:showIndex }
+#-----------------------------点播管理-------------------------------
 admin_vod_list:
     path: /vod/list
     defaults: { _controller: AppBundle:VodManage:showList }
@@ -29,22 +32,24 @@ admin_vod_list_data:
 admin_vod_add:
     path: /vod/add
     defaults: { _controller: AppBundle:VodManage:addVod }
+#-----------------------------分类管理-------------------------------
 admin_class_show:
     path: /class/show
     defaults: { _controller: AppBundle:ClassManage:show }
 admin_class_add:
     path: /class/add
     defaults: { _controller: AppBundle:ClassManage:add }
-
+admin_class_data:
+    path: /class/getData
+    defaults: { _controller: AppBundle:ClassManage:getData }
+admin_class_delete:
+    path: /class/delete
+    defaults: { _controller: AppBundle:ClassManage:delete}
+admin_class_edit:
+    path: /class/edit
+    defaults: { _controller: AppBundle:ClassManage:edit}
+#----------------------------登录-----------------------
 login_check:
     path: /login_check
 logout:
     path: /logout
-
-show_list:
-    path:     /showList
-    defaults: { _controller: AppBundle:VodManage:showList }
-
-show:
-    path:     /show
-    defaults: { _controller: AppBundle:ClassManage:show }
