@@ -34,15 +34,18 @@ $(function () {
         onSaveNode:function(event,node){
             var $input = $('li[data-nodeid='+node.nodeId+']').find('input');
             if($.trim($input.val())=="") {$.mywind('alert',{title: "操作提示", message: "请填写完整" });return;}
-            data = {};
+            data = {
+                text:$input.val(),
+                isParent:node.isParent,
+                parentId:node.parentId
+            };
 
             $.post('{{ path('admin_class_add') }}',data,function(re){
-                re.status = 0;
-                re.nodeId = Date.parse(new Date())/1000%100;
-                re.text = "测试";
                 if(!re.status){
                     $tree.treeview('saveNew',re);
                     $.mywind('alert',{title: "操作提示", message: "成功", btnok: "确定"});
+                }else{
+                    $.mywind('alert',{title: "操作提示", message: re.msg, btnok: "确定"});
                 }
             },'json');
         },

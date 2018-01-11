@@ -176,10 +176,15 @@
 		}else {
 			//异步请求数据
 			$.post(options.url,{},function (re) {
-                options.data = re;
-                _this.tree = $.extend(true, [], options.data);
-                delete options.data;
-                _this.initTree(options);
+				if(!re.status){
+                    options.data = re.data;
+                    _this.tree = $.extend(true, [], options.data);
+                    delete options.data;
+                    _this.initTree(options);
+				}else{
+                    $.mywind('alert',{title: "操作提示", message: re.msg});
+				}
+
             },'json');
 		}
 

@@ -12,21 +12,25 @@ AppBundle\Entity\VodClass:
         name:
             type: string
             length: 255
-            nullable: true
+            nullable: false
             unique: true
         parentId:
             type: integer
-            nullable: true
+            nullable: false
             column: parent_id
         path:
             type: string
             length: 255
         createTime:
             type: datetimetz
-            nullable: true
+            nullable: false
             column: create_time
         modifiedTime:
             type: datetimetz
-            nullable: true
+            nullable: false
             column: modified_time
+        isLeaf:
+            type: boolean
+            nullable: false
+            column: is_leaf
     lifecycleCallbacks: {  }

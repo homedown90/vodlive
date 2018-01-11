@@ -10,4 +10,11 @@ namespace AppBundle\Repository;
  */
 class VodClassRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function findAllOrderByIdAsc(){
+        return $this->getEntityManager()
+            ->createQuery(
+                'SELECT c FROM AppBundle:VodClass c ORDER BY c.id ASC'
+            )
+            ->getResult();
+    }
 }
