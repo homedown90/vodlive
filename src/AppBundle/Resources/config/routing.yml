@@ -23,15 +23,18 @@ admin_page:
     path: /admin
     defaults: { _controller: AppBundle:Admin:showIndex }
 #-----------------------------点播管理-------------------------------
-admin_vod_list:
-    path: /vod/list
-    defaults: { _controller: AppBundle:VodManage:showList }
-admin_vod_list_data:
+admin_vod_show:
+    path: /vod/show
+    defaults: { _controller: AppBundle:VodManage:show }
+admin_vod_data:
     path: /vod/search
-    defaults: { _controller: AppBundle:VodManage:getListData}
+    defaults: { _controller: AppBundle:VodManage:getData}
 admin_vod_add:
     path: /vod/add
     defaults: { _controller: AppBundle:VodManage:addVod }
+admin_vod_add_show:
+    path: /vod/add/show
+    defaults: { _controller: AppBundle:VodManage:showAdd }
 #-----------------------------分类管理-------------------------------
 admin_class_show:
     path: /class/show

@@ -1,0 +1,49 @@
+<div class="container-fluid">
+<form class="form-horizontal" enctype="multipart/form-data">
+    {#-------------添加标题--------------#}
+<div class="row">
+<div class="col-sm-8">
+    <!-- 必填项建议添加 required 属性 -->
+    <div class="input-group">
+        <label class="be-input-group-label input-group-addon" for="add_dialog_title">标题</label>
+        <span class="input-group-addon-text"><i>*</i></span>
+        <input type="text" class="form-control" name="title" id="add_dialog_title" placeholder="请输入标题…" required/>
+    </div>
+</div>
+</div>
+    {#-------------添加简介--------------#}
+<div class="row">
+<div class="col-sm-8">
+    <div class="input-group">
+        <label class="be-input-group-label input-group-addon" for="add_dialog_desc">简介</label>
+        <textarea class="form-control" name="description" id="add_dialog_desc" rows="3" placeholder="在此输入简介…" title="视频描述"></textarea>
+    </div>
+</div>
+</div>
+    {#-------------上传视频--------------#}
+<div class="row">
+<div class="col-sm-8">
+<div class="input-group">
+    <label class="be-input-group-label input-group-addon" for="add_dialog_upload">上传视频</label>
+    <span class="input-group-addon-text">（文件格式限制.mp4）</span>
+    <div class="control-group">
+        <label>
+            <input type="file" data-toggle="upload" name="file" id="add_dialog_upload" accept="video/mp4"  />
+        </label>
+    </div>
+</div>
+</div>
+</div>
+</form>
+</div>
+<script>
+$(function () {
+    var modal_id = $.mywind('getOption',['id']);
+    $.mywind('setOption',{ok:function(){
+
+        }}
+    );
+    BE.initPlugin('upload', $("#add_dialog_upload"));
+});
+</script>
+

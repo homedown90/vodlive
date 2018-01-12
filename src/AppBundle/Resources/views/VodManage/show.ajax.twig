@@ -1,0 +1,145 @@
+{% extends "@App/admin_show.ajax.twig" %}
+
+{% block table_form %}
+<div class="row" id="vod_row">
+{#------------搜索表单-------------------#}
+<div class="col-sm-8">
+<form class="be-form-inline form-inline">
+
+<div class="form-group">
+<label class="control-label" for="admin_search_title">标题<i>*</i></label>
+<input type="text" class="form-control" name="title" placeholder="请输入内容…" required/>
+</div>
+
+<div class="form-group">
+<label class="control-label" for="admin_search_desc">描述<i>*</i></label>
+<input type="text" class="form-control" name="description" placeholder="请输入内容…" required/>
+</div>
+
+<div class="form-group">
+<label class="control-label" for="admin_search_publis">是否发布<i>*</i></label>
+<select class="form-control" name="status">
+    <option value="">全部</option>
+    <option value="0">否</option>
+    <option value="1">是</option>
+</select>
+</div>
+
+<div class="form-group">
+<label class="control-label" for="admin_search_cut">是否切流成功<i>*</i></label>
+<select class="form-control" name="cuted">
+    <option value="">全部</option>
+    <option value="0">是</option>
+    <option value="1">否</option>
+</select>
+</div>
+
+<button  class="btn btn-default" name="search"><i class="be-icon fa fa-search"></i> 搜索</button>
+<button  class="btn btn-default" name="reset"><i class="be-icon fa fa-undo"></i> 重置</button>
+</form>
+</div>
+{#------添加按钮-------------------------------#}
+<div class="col-sm-4">
+    <button class="btn btn-primary" name="addVod">添加</button>
+</div>
+</div>
+{% endblock %}
+
+{% block table_table %}
+    <table id="table">
+    </table>
+{% endblock %}
+
+{% block table_script %}
+<script>
+$(function () {
+    //--------------------------初始化table组件-----------------------------------------
+    var $table = $('#table');
+    //------------------------添加初始化组件的工具函数，如formatter 格式化等回调函数
+    $.extend({
+        table_util: {
+            operateFormatter: function (value, row, index) {
+                return [
+                    '<span class="be-table-hidden-info">',
+                    '<a href="#" class="btn btn-xs btn-link-info J_beTableAction" title="编辑">',
+                    '<i class="fa fa-pencil-square-o be-icon"></i>',
+                    '</a>',
+                    '<a href="#" class="btn btn-xs btn-link-danger J_beTableAction" title="删除">',
+                    '<i class="fa fa-trash be-icon"></i>',
+                    '</a>',
+                    '<a href="#" class="btn btn-xs btn-link-danger J_beTableAction" title="预览">',
+                    '<i class="fa fa-trash be-icon"></i>',
+                    '</a>',
+                    '</span>',
+                ].join('');
+            },
+            isToCNFormatter: function (value, row, index) {
+                var f_v = ['否', '是'];
+                return f_v[parseInt($.trim(value))];
+            },
+            statusFormatter: function (value, row, index) {
+                var status = {
+                    'closed': "关闭",
+                    'draft': "未发布",
+                    'published': "发布"
+                };
+                return status[value];
+            },
+
+        }
+    });
+    //------------------------------使用json 初始化table 组件
+    BE.initPlugin('bootstrapTable', $table, {
+        search: false,
+        height: "400",
+        sidePagination: "server",
+        pagination: true,
+        pageSize: 15,
+        pageList: [10, 25, 50, 100, 'ALL'],
+        locale: "zh-CN",
+        idField: "id",
+        url: "{{ path('admin_vod_data') }}",
+        method: "post",
+        columns: [{
+            field: 'index',
+            title: '行号',
+        }, {
+            field: 'title',
+            title: '标题'
+        }, {
+            field: 'description',
+            title: '描述'
+        }, {
+            field: 'to_hls',
+            title: '切片',
+            formatter: $.table_util.isToCNFormatter
+        }, {
+            field: 'status',
+            title: '发布',
+            formatter: $.table_util.statusFormatter
+        }, {
+            field: 'type',
+            title: '媒体类型'
+        }, {
+            field: 'stream',
+            title: '输出流'
+        }, {
+            field: 'operator',
+            title: '操作',
+            formatter: $.table_util.operateFormatter
+        }]
+    });
+    $('#vod_row button[name=addVod]').on('click',function (event) {
+        event.preventDefault();
+        $.mywind('dialog',{
+            url:"{{ path('admin_vod_add_show') }}",
+            success:function(){
+
+            }
+        });
+    })
+    BE.initPlugin('upload', $("#add_dialog_upload"));
+});
+
+</script>
+{% endblock %}

@@ -43,7 +43,7 @@
     <!-- 主体区域 -->
     <div class="be-content">
         <!-- 面包屑 -->
-        <ol class="be-breadcrumb breadcrumb"><li><a href="#">首页</a></li></ol>
+        <ol class="be-breadcrumb breadcrumb"><li><a href="{{ path('admin_page') }}">后台管理</a></li></ol>
         <!-- 正文区域 -->
         <div class="be-main" style="min-height: 790px;">
         <div class="container-fluid">
@@ -69,7 +69,7 @@
                 <div class="sub-menu collapse" id="collapseSubMenu2">
                     <span class="title">点播管理</span>
                     <ul class="sub-nav-list">
-                        <li><a href="{{ path("admin_vod_list") }}"><span class="text">点播列表</span></a></li>
+                        <li><a href="{{ path("admin_vod_show") }}"><span class="text">点播列表</span></a></li>
                         <li><a href="{{ path("admin_class_show") }}"><span class="text">添加分类</span></a></li>
                     </ul>
                 </div>

@@ -693,16 +693,16 @@
 	Tree.prototype.addTreeNode = function(){
 		var parent = this.getSelected();
         if($.isEmptyObject(parent)){
-            $.mywind('alert',{title: "添加提示", message: "请选择父类",});
+            $.mywind('alert',{title: "提示", message: "请选择父类",});
             return;
         }
         if(parent[0].isParent == false){
-            $.mywind('alert',{title: "添加提示", message: "只有父类能够添加",});
+            $.mywind('alert',{title: "提示", message: "只有父类能够添加",});
             return;
         }
 
 		if(this.nodes[-2]){
-            $.mywind('alert',{title: "添加提示", message: "请先保存节点再重新添加",});
+            $.mywind('alert',{title: "提示", message: "请先保存节点再重新添加",});
             return;
 		}
         parent = parent[0];
@@ -720,12 +720,12 @@
 	};
 	Tree.prototype.editTreeNode = function(){
 		if(this.nodes[-2]){
-            $.mywind('alert',{title: "添加提示", message: "请先保存节点再重新添加",});
+            $.mywind('alert',{title: "提示", message: "请先保存节点再重新添加",});
             return;
 		}
         var node = this.getSelected();
         if($.isEmptyObject(node)){
-            $.mywind('alert',{title: "添加提示", message: "请选择编辑的节点",});
+            $.mywind('alert',{title: "提示", message: "请选择编辑的节点",});
             return;
         }
         node = node[0];

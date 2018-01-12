@@ -1,6 +1,8 @@
 
 $.extend({
-    mywind : function(method,options){
+    mywind : function(method,options)
+    {
+
     var html = '<div id="[Id]" class="modal fade" role="dialog" aria-labelledby="modalLabel">' +
         '<div class="modal-dialog [modalStyle]">' +
         '<div class="modal-content">' +
@@ -18,31 +20,23 @@ $.extend({
         '</div>' +
         '</div>' +
         '</div>';
+
     var reg = new RegExp("\\[([^\\[\\]]*?)\\]", 'igm');
-    var generateId = function() {
+
+    var generateId = function()
+    {
         var date = new Date();
         return 'mdl' + date.valueOf();
     }
-    options = $.extend({}, {
-        title: "提示",
-        message: "提示内容",
-        btnok: "确定",
-        btncl: "取消",
-        width: 200,
-        modalStyle:"modal-sm",
-        auto: false,
-        ok:function(){
-            return true;
-        },
-        concel:function () {
-            return true;
-        }
 
-    }, options || {});
-    var init = function(options) {
+    var opt = $.extend({}, options || {});
 
+    this.options = opt;
+
+    var init = function(options)
+    {
         var modalId = generateId();
-
+        options.id = modalId;
         var content = html.replace(reg, function(node, key) {
             return {
                 Id: modalId,
@@ -66,17 +60,34 @@ $.extend({
 
     this.methods = {
         alert :function(context,options) {
-            if (typeof options == 'string') {
-                options = {
-                    message: options
-                };
+            var opt = $.extend({}, {
+                title: "提示",
+                message: "提示内容",
+                btnok: "确定",
+                btncl: "取消",
+                width: 200,
+                modalStyle:"modal-sm",
+                auto: false,
+                ok:function(){
+                    return true;
+                },
+                concel:function () {
+                    return true;
+                }
+
+            }, options || {});
+            options = context.options = opt;
+            if (typeof options == 'string')
+            {
+                options = {message: options};
             }
             var id = init(options);
             var modal = $('#' + id);
-            modal.find('.ok').removeClass('btn-success').addClass('btn-primary');
+
             modal.find('.cancel').hide();
+            modal.find('.ok').removeClass('btn-success').addClass('btn-primary');
             modal.find('.ok').on('click',function(event){
-                var result = $.proxy(options.ok,this)(event,options);
+                var result = $.proxy(options.ok,context)(event,options);
                 if(result){
                     $('#' + id).modal('hide').hide();
                 }
@@ -84,10 +95,29 @@ $.extend({
             });
         },
         confirm:function(context,options) {
+            var opt = $.extend({}, {
+                title: "提示",
+                message: "提示内容",
+                btnok: "确定",
+                btncl: "取消",
+                width: 200,
+                modalStyle:"modal-sm",
+                auto: false,
+                ok:function(){
+                    return true;
+                },
+                concel:function () {
+                    return true;
+                }
+
+            }, options || {});
+            options = context.options = opt;
             var id = init(options);
             var modal = $('#' + id);
-            modal.find('.ok').removeClass('btn-primary').addClass('btn-primary');
+
             modal.find('.cancel').show();
+
+            modal.find('.ok').removeClass('btn-primary').addClass('btn-primary');
             modal.find('.ok').on('click',function(event){
                 var result = $.proxy(options.ok,this)(event,options);
                 if(result){
@@ -96,15 +126,15 @@ $.extend({
 
             });
             modal.find('.concel').on('click',function(event){
-                var result = $.proxy(options.concel,this)(event,options);
+                var result = $.proxy(options.concel,context)(event,options);
                 if(result){
                     $('#' + id).modal('hide').hide();
                 }
 
             });
         },
-        dialog: function(options) {
-            options = $.extend({}, {
+        dialog: function(context,options) {
+            var opt = $.extend({}, {
                 title: "操作",
                 url: '',
                 message:"内容",
@@ -117,17 +147,27 @@ $.extend({
                 },
                 concel:function () {
                     return true;
+                },
+                success:function () {
+                    return true;
+                },
+                fail:function () {
+                    return true;
                 }
             }, options || {});
+            options = context.options = opt;
+
             var modalId = generateId();
             var id = init(options);
             var modal = $('#' + id);
-            modal.find('.ok').removeClass('btn-primary').addClass('btn-primary');
+
             modal.find('.cancel').show();
+            modal.find('.ok').removeClass('btn-primary').addClass('btn-primary');
             modal.find('.ok').on('click',function(event){
-                var result = $.proxy(options.ok,this)(event,options);
+                var result = $.proxy(options.ok,context)(event,options);
                 if(result){
                     $('#' + id).modal('hide').hide();
+                    $.proxy(options.success,context)(event,options);
                 }
 
             });
@@ -139,17 +179,27 @@ $.extend({
 
             });
             if(!$.isEmptyObject(options.url)){
-                target.find('.modal-body').load(options.url);
+                modal.find('.modal-body').load(options.url);
             }
+        },
+        setOption:function(context,options){
+            $.extend(context.op,options);
+        },
+        getOption:function(context,options){
+            var data = {};
+            $.each(options,function(i,n){
+                data[n] = context.options[n];
+            });
+            return data;
         }
-
     };
         if (typeof(method) == "string") {
             var func = this.methods[method];
         }
         if (func) {
-            return func(this, options);
+            return func(this, this.options);
         }
+
 },
 
 });
