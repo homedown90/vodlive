@@ -40,10 +40,16 @@ AppBundle\Entity\VodList:
             nullable: true
         createTime:
             type: datetimetz
-            nullable: true
+            nullable: false
             column: create_time
+            gedmo:
+                 timestampable:
+                      on: create
         modifiedTime:
             type: datetimetz
-            nullable: true
+            nullable: false
             column: modified_time
+            gedmo:
+                 timestampable:
+                    on: update
     lifecycleCallbacks: {  }

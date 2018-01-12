@@ -5,10 +5,10 @@
  * Date: 2018/1/11
  * Time: 17:53
  */
-namespace Symfony\Component\HttpFoundation;
-
+namespace Extend\Symfony;
 use \Extend\util\UtilTool;
-class FilterRequest extends Request
+use \Symfony\Component\HttpFoundation as HtttpFundation;
+class FilterRequest extends     HtttpFundation\Request
 {
     /**
      * Sets the parameters for this request.
@@ -26,13 +26,13 @@ class FilterRequest extends Request
     public function initialize(array $query = array(), array $request = array(), array $attributes = array(), array $cookies = array(), array $files = array(), array $server = array(), $content = null)
     {
 
-        $this->request = new ParameterBag(UtilTool::html_entity_encode_array($request));
-        $this->query = new ParameterBag(UtilTool::html_entity_encode_array($query));
-        $this->attributes = new ParameterBag($attributes);
-        $this->cookies = new ParameterBag($cookies);
-        $this->files = new FileBag($files);
-        $this->server = new ServerBag($server);
-        $this->headers = new HeaderBag($this->server->getHeaders());
+        $this->request = new HtttpFundation\ParameterBag(UtilTool::html_entity_encode_array($request));
+        $this->query = new HtttpFundation\ParameterBag(UtilTool::html_entity_encode_array($query));
+        $this->attributes = new HtttpFundation\ParameterBag($attributes);
+        $this->cookies = new HtttpFundation\ParameterBag($cookies);
+        $this->files = new HtttpFundation\FileBag($files);
+        $this->server = new HtttpFundation\ServerBag($server);
+        $this->headers = new HtttpFundation\HeaderBag($this->server->getHeaders());
 
         $this->content = $content;
         $this->languages = null;

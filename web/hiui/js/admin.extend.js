@@ -24,7 +24,7 @@ $.extend({
         return 'mdl' + date.valueOf();
     }
     options = $.extend({}, {
-        title: "操作提示",
+        title: "提示",
         message: "提示内容",
         btnok: "确定",
         btncl: "取消",

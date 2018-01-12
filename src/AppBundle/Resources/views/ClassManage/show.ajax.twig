@@ -18,22 +18,21 @@ $(function () {
         url:"{{ path('admin_class_data') }}",
 //        data: getTree(),
         onEditNode:function(event,node){
+            var text = $('li[data-nodeid='+node.nodeId+']').find("input").val();
+            data = {"text":text,'nodeId':node.nodeId};
             $.post("{{ path('admin_class_edit') }}",data,function (re) {
-                re.status = 0;
-                re.text = "测试11312321";
-                re.nodeId = node.nodeId;
                 if(!re.status)
                 {
                     $tree.treeview('saveNew',[re,true]);
                 }else{
-                    $.mywind('alert',{title: "操作提示", message: re.msg});
+                    $.mywind('alert',{title:"错误提示", message: re.msg});
                 }
             },'json');
 
         },
         onSaveNode:function(event,node){
             var $input = $('li[data-nodeid='+node.nodeId+']').find('input');
-            if($.trim($input.val())=="") {$.mywind('alert',{title: "操作提示", message: "请填写完整" });return;}
+            if($.trim($input.val())=="") {$.mywind('alert',{ message: "请填写完整" });return;}
             data = {
                 text:$input.val(),
                 isParent:node.isParent,
@@ -43,16 +42,15 @@ $(function () {
             $.post('{{ path('admin_class_add') }}',data,function(re){
                 if(!re.status){
                     $tree.treeview('saveNew',re);
-                    $.mywind('alert',{title: "操作提示", message: "成功", btnok: "确定"});
+                    $.mywind('alert',{ message: "成功", btnok: "确定"});
                 }else{
-                    $.mywind('alert',{title: "操作提示", message: re.msg, btnok: "确定"});
+                    $.mywind('alert',{ title:"错误提示",message: re.msg, btnok: "确定"});
                 }
             },'json');
         },
         onConcelNode:function(event,node){
             $.mywind('confirm',{
-                title: "操作提示",
-                message: "提示内容",
+                message: "不保存信息?",
                 ok:function(){
                     $tree.treeview('removeNode',node.nodeId);return true;
                 }
@@ -65,34 +63,43 @@ $(function () {
     $("#vod_class_manage").find('button[name="classDel"]').on('click',function () {
         var _editeNode =  $tree.treeview('getNode',-2);
         if(_editeNode.nodeId == -2){
-            $.mywind('alert',{title: "添加提示", message: "请先编辑完成节点再删除"});
+            $.mywind('alert',{ message: "请先编辑完成节点再删除"});
             return;
         }
         var node = $tree.treeview('getSelected');
         if($.isEmptyObject(node)){
-            $.mywind('alert',{title: "添加提示", message: "请选择节点"});
+            $.mywind('alert',{ message: "请选择节点"});
             return;
         }
         node = node[0];
         if(node.nodeId == 0)
         {
-            $.mywind('alert',{title: "添加提示", message: "不能删除全部"});
+            $.mywind('alert',{ message: "不能删除全部"});
             return;
         }
         if(!$.isEmptyObject(node.nodes))
         {
-            $.mywind('alert',{title: "添加提示", message: "请先删除子类,再删除父类"});
+            $.mywind('alert',{ message: "请先删除子类,再删除父类"});
             return;
         }
+        data ={"nodeId":node.nodeId};
 
-        $.post("{{ path('admin_class_delete') }}",data,function (re) {
-            re.status = 0;
-            if(!re.status){
-                $tree.treeview('removeNode',node.nodeId)
-            }else{
-                $.mywind('alert',{title: "添加提示", message: re.msg});
+        $.mywind('confirm',{
+            message: "确定移除分类?",
+            ok:function(){
+                $.post("{{ path('admin_class_delete') }}",data,function (re) {
+                    if(!re.status){
+                        $tree.treeview('removeNode',node.nodeId)
+                    }else{
+                        $.mywind('alert',{title: "错误提示", message: re.msg});
+                    }
+                },'json')
             }
-        },'json')
+        });
+        return;
+
+
+
     });
     $("#vod_class_manage").find('button[name="classEdit"]').on('click',function () {
         $tree.treeview('editTreeNode');

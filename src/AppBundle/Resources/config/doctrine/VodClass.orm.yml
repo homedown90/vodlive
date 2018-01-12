@@ -25,10 +25,16 @@ AppBundle\Entity\VodClass:
             type: datetimetz
             nullable: false
             column: create_time
+            gedmo:
+                 timestampable:
+                     on: create
         modifiedTime:
             type: datetimetz
             nullable: false
             column: modified_time
+            gedmo:
+                 timestampable:
+                    on: update
         isLeaf:
             type: boolean
             nullable: false
