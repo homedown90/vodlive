@@ -1,0 +1,41 @@
+AppBundle\Entity\VodMd5File:
+    type: entity
+    table: null
+    repositoryClass: AppBundle\Repository\VodMd5FileRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        jsMd5:
+            type: string
+            length: '64'
+            unique: true
+            column: js_md5
+        fileName:
+            type: string
+            length: 255
+            column: file_name
+        serverMd5:
+            type: string
+            length: '64'
+            unique: true
+            nullable: true
+            column: server_md5
+        createTime:
+            type: datetimetz
+            nullable: false
+            column: create_time
+            gedmo:
+                 timestampable:
+                     on: create
+        modifiedTime:
+            type: datetimetz
+            nullable: false
+            column: modified_time
+            gedmo:
+                 timestampable:
+                    on: update
+    lifecycleCallbacks: {  }

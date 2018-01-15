@@ -23,27 +23,207 @@
     {#-------------上传视频--------------#}
 <div class="row">
 <div class="col-sm-8">
-<div class="input-group">
-    <label class="be-input-group-label input-group-addon" for="add_dialog_upload">上传视频</label>
-    <span class="input-group-addon-text">（文件格式限制.mp4）</span>
-    <div class="control-group">
-        <label>
-            <input type="file" data-toggle="upload" name="file" id="add_dialog_upload" accept="video/mp4"  />
-        </label>
+    <div class="input-group">
+        <label class="be-input-group-label input-group-addon" for="add_dialog_file">文件</label>
+        <input type="text" name="fileName" class="form-control" id="add_dialog_file" value="" readonly />
+        <span class="input-group-btn">
+          <button class="btn btn-default" type="button" name="startUpload">开始上传</button>
+        </span>
+        <input type="hidden" value="" name="fileMd5"/>
     </div>
+</div>
+    <div class="col-sm-4">
+        <div id="picker">选择文件</div>
+    </div>
+</div>
+<div class="row">
+<div class="col-sm-8">
+    <div><span name="processer"></span></div>
+</div>
+<div class="col-sm-4">
+<div>
+<div><span name="result"></span></div>
 </div>
 </div>
 </div>
 </form>
 </div>
 <script>
+    //# sourceURL=add.js
 $(function () {
-    var modal_id = $.mywind('getOption',['id']);
+    var modal_id = $.mywind('getOption',['id']).id;
+    var _userInfo = {'openid':1,"time":(new Date()).getTime()};
+    var $form = $("#"+modal_id).find("form");
     $.mywind('setOption',{ok:function(){
 
         }}
     );
     BE.initPlugin('upload', $("#add_dialog_upload"));
+    var upload_url = "{{ path('admin_vod_upload') }}";
+    WebUploader.Uploader.register({
+        //在文件发送之前request，此时还没有分片（如果配置了分片的话），可以用来做文件整体md5验证。
+        "before-send-file": "beforeSendFile",
+        //在分片发送之前request，可以用来做分片验证，如果此分片已经上传成功了，可返回一个rejected promise来跳过此分片上传
+        "before-send": "beforeSend",
+        //在所有分片都上传完毕后，且没有错误后request，用来做分片验证，此时如果promise被reject，当前文件上传会触发错误
+        "after-send-file": "afterSendFile"
+    }, {
+        beforeSendFile: function(file){
+            console.log(file);
+            //秒传验证
+            var task = new $.Deferred();
+            var start = new Date().getTime();
+            (new WebUploader.Uploader()).md5File(file, 0, 10*1024*1024).progress(function(percentage){
+            }).then(function(val){
+
+                md5Mark = val;
+                _userInfo.md5 = val;
+
+                $.ajax({
+                    type: "POST",
+                    url: upload_url,
+                    data: {
+                        status: "md5Check",
+                        md5: val
+                    },
+                    cache: false,
+                    timeout: 1000, //todo 超时的话，只能认为该文件不曾上传过
+                    dataType: "json"
+                }).then(function(data, textStatus, jqXHR){
+
+                    if(data.is_exit){   //若存在，这返回失败给WebUploader，表明该文件不需要上传
+                        task.reject();
+
+                        uploader.skipFile(file);
+                        file.path = data.path;
+//                        UploadComlate(file);
+                    }else{
+                        task.resolve();
+                        //拿到上传文件的唯一名称，用于断点续传
+                        uniqueFileName = $.md5(_userInfo.openid+''+_userInfo.time);
+                    }
+                }, function(jqXHR, textStatus, errorThrown){    //任何形式的验证失败，都触发重新上传
+                    task.resolve();
+                    //拿到上传文件的唯一名称，用于断点续传
+                    uniqueFileName = $.md5(_userInfo.openid+''+_userInfo.time);
+                });
+            });
+            return $.when(task);
+        }
+        , beforeSend: function(block){
+            //分片验证是否已传过，用于断点续传
+            var task = new $.Deferred();
+            $.ajax({
+                type: "POST"
+                , url: upload_url
+                , data: {
+                    status: "chunkCheck"
+                    , name: uniqueFileName
+                    , chunkIndex: block.chunk
+                    , size: block.end - block.start
+                }
+                , cache: false
+                , timeout: 1000 //todo 超时的话，只能认为该分片未上传过
+                , dataType: "json"
+            }).then(function(data, textStatus, jqXHR){
+                if(data.is_exit){   //若存在，返回失败给WebUploader，表明该分块不需要上传
+                    task.reject();
+                }else{
+                    task.resolve();
+                }
+            }, function(jqXHR, textStatus, errorThrown){    //任何形式的验证失败，都触发重新上传
+                task.resolve();
+            });
+
+            return $.when(task);
+        }
+        , afterSendFile: function(file){
+            /*var chunksTotal = 0;
+            if((chunksTotal = Math.ceil(file.size/chunkSize)) > 1){
+                //合并请求
+                var task = new $.Deferred();
+                $.ajax({
+                    type: "POST"
+                    , url: upload_url
+                    , data: {
+                        status: "chunksMerge"
+                        , name: uniqueFileName
+                        , chunks: chunksTotal
+                        , ext: file.ext
+                        , md5: md5Mark
+                    }
+                    , cache: false
+                    , dataType: "json"
+                }).then(function(data, textStatus, jqXHR){
+
+                    //todo 检查响应是否正常
+
+                    task.resolve();
+                    file.path = data.path;
+                    UploadComlate(file);
+
+                }, function(jqXHR, textStatus, errorThrown){
+                    task.reject();
+                });
+
+                return $.when(task);
+            }else{
+                UploadComlate(file);
+            }*/
+        }
+    });
+    var uploader = WebUploader.create({
+        // swf文件路径
+        swf: "{{ asset('/static-dist/webuploader/Uploader.swf') }}",
+        // 文件接收服务端。
+        server: upload_url,
+        // 选择文件的按钮。可选。
+        // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+        pick: {
+            id: '#picker',
+            multiple:false,
+        },
+
+        // 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
+        resize: false,
+        compress: false,
+        prepareNextFile: true,
+        chunked: true,
+
+        chunkSize: 5*1024*1024,//块大小
+        chunkRetry: 3,    //[可选] [默认值：2]如果某个分片由于网络问题出错，允许自动重传多少次？
+        threads: true,      //[可选] [默认值：3] 上传并发数。允许同时最大上传进程数。
+        fileNumLimit: 1,
+        fileSingleSizeLimit: 5*1024 * 1024 * 1024,// 限制在50M
+        duplicate: true,
+        accept: {
+            title: '大文件上传',  //文字描述
+            extensions: 'mp4',     //允许的文件后缀，不带点，多个用逗号分割。,jpg,png,
+            mimeTypes: "video/*,audio/*",      //多个用逗号分割。image/*,
+        },
+    });
+    // webuploader事件.当选择文件后，文件被加载到文件队列中，触发该事件。等效于 uploader.onFileueued = function(file){...} ，类似js的事件定义。
+    uploader.on( 'fileQueued', function( file ) {
+
+        $form.find('[name=fileName]').val(file.name);
+        $form.find('[name=fileName]').data('fild_id',file.id);
+    });
+    uploader.on( 'uploadProgress', function( file, percentage ) {
+        $form.find('[name=processor]').html( percentage * 100 + '%' );
+    });
+    uploader.on( 'uploadSuccess', function( file ) {
+        $form.find('[name=result]').html("成功");
+    });
+
+    // 文件上传失败，显示上传出错。
+    uploader.on( 'uploadError', function( file ) {
+        $form.find('[name=result]').html("失败");
+    });
+    $form.find('[name=startUpload]').on('click',function(){
+        uploader.upload();
+    });
 });
+
+
 </script>
 

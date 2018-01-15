@@ -26,6 +26,7 @@ class ClassManageController extends Controller {
 
 	    $data = array('status' => 0, 'msg'=>'成功');
 	    try{
+
             $request = FilterRequest::createFromGlobals();
             $node = array();
             $node['name'] = $request->request->get('text');

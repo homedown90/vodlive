@@ -29,10 +29,6 @@ $.extend({
         return 'mdl' + date.valueOf();
     }
 
-    var opt = $.extend({}, options || {});
-
-    this.options = opt;
-
     var init = function(options)
     {
         var modalId = generateId();
@@ -55,6 +51,11 @@ $.extend({
         $('#' + modalId).on('hide.bs.modal', function(e) {
             $('body').find('#' + modalId).remove();
         });
+        if(!$.isEmptyObject(options.url)){
+            $('#' + modalId).on('shown.bs.modal',function(){
+                $(this).find('.modal-body').load(options.url);
+            });
+        }
         return modalId;
     }
 
@@ -137,7 +138,7 @@ $.extend({
             var opt = $.extend({}, {
                 title: "操作",
                 url: '',
-                message:"内容",
+                message:"<i class=\"fa fa-3x fa-fw fa-spinner fa-pulse\"></i>",
                 width: 800,
                 modalStyle:"modal-lg",
                 btnok: "确定",
@@ -178,9 +179,6 @@ $.extend({
                 }
 
             });
-            if(!$.isEmptyObject(options.url)){
-                modal.find('.modal-body').load(options.url);
-            }
         },
         setOption:function(context,options){
             $.extend(context.op,options);
@@ -193,12 +191,12 @@ $.extend({
             return data;
         }
     };
-        if (typeof(method) == "string") {
-            var func = this.methods[method];
-        }
-        if (func) {
-            return func(this, this.options);
-        }
+     if (typeof(method) == "string") {
+         var func = this.methods[method];
+     }
+     if (func) {
+         return func(this, options);
+     }
 
 },
 

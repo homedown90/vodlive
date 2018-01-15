@@ -35,6 +35,10 @@ admin_vod_add:
 admin_vod_add_show:
     path: /vod/add/show
     defaults: { _controller: AppBundle:VodManage:showAdd }
+admin_vod_upload:
+    path: /vod/upload
+    defaults: { _controller: AppBundle:VodManage:upLoad }
+
 #-----------------------------分类管理-------------------------------
 admin_class_show:
     path: /class/show

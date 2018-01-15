@@ -35,7 +35,7 @@ $(function () {
             if($.trim($input.val())=="") {$.mywind('alert',{ message: "请填写完整" });return;}
             data = {
                 text:$input.val(),
-                isParent:node.isParent,
+                isParent:node.isParent?1:0,
                 parentId:node.parentId
             };
 

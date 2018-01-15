@@ -6,7 +6,7 @@
  * Time: 17:53
  */
 namespace Extend\Symfony;
-use \Extend\util\UtilTool;
+use \Extend\Util\UtilTool;
 use \Symfony\Component\HttpFoundation as HtttpFundation;
 class FilterRequest extends     HtttpFundation\Request
 {

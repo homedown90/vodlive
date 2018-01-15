@@ -1,5 +1,5 @@
 <?php
-namespace Extend\util;
+namespace Extend\Util;
 class UtilTool {
     /**
      * @param array $data
