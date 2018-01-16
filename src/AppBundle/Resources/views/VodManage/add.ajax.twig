@@ -72,7 +72,6 @@ $(function () {
             console.log(file);
             //秒传验证
             var task = new $.Deferred();
-            var start = new Date().getTime();
             (new WebUploader.Uploader()).md5File(file, 0, 10*1024*1024).progress(function(percentage){
             }).then(function(val){
 
