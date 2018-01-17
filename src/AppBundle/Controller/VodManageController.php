@@ -6,7 +6,6 @@ use AppBundle\Entity\VodMd5File;
 use Extend\Symfony\FilterRequest;
 use Extend\Util\UpLoad;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
 
 class VodManageController extends Controller
@@ -66,7 +65,6 @@ class VodManageController extends Controller
         $data = array('status' => 0, 'msg'=>'成功');
         try{
             $logger = $this->get('logger');
-
             set_time_limit (0);
             $response = new Response();
             //关闭缓存
@@ -79,50 +77,20 @@ class VodManageController extends Controller
             $request = FilterRequest::createFromGlobals();
             $post = $request->request->all();
             $files = $request->files->all();
-//            $upload_url = $this->get('kernel')->getProjectDir()."/web/upload"; // 这里得到的是app目录的绝对路
             $upload_url = $this->getParameter('brochures_directory'); // 这里得到的是app目录的绝对路
-            $uploader =  new UpLoad($upload_url);
 
             //用于断点续传，验证指定分块是否已经存在，避免重复上传
-            if(isset($post['status'])){
-                switch ($post['status'])
-                {
-                    case 'chunkCheck':
-                    {
-                        $re = $this->chunkMergeAction($post,$files,$uploader);
-                        $data = array_merge($data,$re);
-                        break;
-                    }
-                    case 'md5Check':
-                    {
+             $uploader =  new UpLoad($upload_url,$post,$files);
+             $logger->error('--upLoadAction--post  --'.print_r($post,true));
+             $logger->error('--upLoadAction--file  --'.print_r($files,true));
+             if($uploader->uploadChunk() !== false)
+             {
 
-                        $re = $this->md5CheckAction($post,$uploader);
-                        $data = array_merge($data,$re);
-                        break;
-                    }
-                    case 'chunksMerge':
-                    {
-                       /* if($path = $uploader->chunksMerge($_POST['name'], $_POST['chunks'], $_POST['ext'])){
-                            //todo 把md5签名存入持久层，供未来的秒传验证
-                            session('video_path', $save_path.'/'.$path);
-                            die('{"status":1, "path": "'.$save_path.'/'.$path.'"}');
-                        }
-                        die('{"status":0}');*/
-                        break;
-                    }
-                    default:
-                        throw new  Exception("没有相关的状态值");
-                }
-            }else{
-                $logger->error('--upLoadAction--post  --'.print_r($post,true));
-                $logger->error('--upLoadAction--file  --'.print_r($files,true));
-                if(($path = $uploader->upload($post,$files['file'])) !== false)
-                {
-                }else{
-                    $re['status'] = 0;
-                }
+             }else{
+                 $data['status'] = 1;
+                 $data['msg'] = $uploader->getErrorMsg();
+             }
 
-            }
         }catch (\Exception $e){
             $data['msg'] = "操作失败,请联系管理员";
             $data['status'] = 1;
@@ -141,23 +109,52 @@ class VodManageController extends Controller
      *
      *
      */
-    function chunkMergeAction($post,$upload)
+    function chunkCheckAction()
     {
-        $re = array();
-        $re['is_exist'] = $upload->findChunk($post);
-        return $re;
+        $data = array('status' => 0, 'msg'=>'成功');
+        try{
+            $request = FilterRequest::createFromGlobals();
+            $post = $request->request->all();
+            $upload_url = $this->getParameter('brochures_directory'); // 这里得到的是app目录的绝对路
+            if (file_exists(rtrim($upload_url,'/')."/chunk/{$post['upload_path']}/{$post['chunk_index']}") ) {
+                $data['is_exist'] = 1;
+            }else{
+                $data['is_exist'] = 0;
+                $data['msg'] = 'chunk已存在';
+            }
+        }catch (\Exception $e){
+            $data['msg'] = "操作失败,请联系管理员";
+            $data['status'] = 1;
+            $logger = $this->get('logger');
+            $logger->error('--chunkCheckAction  --'.$e->getMessage());
+        }
+        return new Response(
+            json_encode($data),
+            200,
+            array('Content-Type' => 'application/json')
+        );
     }
 
-    function chunksMergeAction($post,$file,$upload)
+    function chunksMergeAction()
     {
-        $re = array();
-       /* if($path = $uploader->chunksMerge($post, $file)){
-            //todo 把md5签名存入持久层，供未来的秒传验证
-            session('video_path', $save_path.'/'.$path);
-            die('{"status":1, "path": "'.$save_path.'/'.$path.'"}');
+        $data = array('status' => 0, 'msg'=>'成功');
+        try{
+            $request = FilterRequest::createFromGlobals();
+            $post = $request->request->all();
+            $files = $request->files->all();
+//            $upload_url = $this->get('kernel')->getProjectDir()."/web/upload"; // 这里得到的是app目录的绝对路
+            $upload_url = $this->getParameter('brochures_directory'); // 这里得到的是app目录的绝对路
+        }catch (\Exception $e){
+            $data['msg'] = "操作失败,请联系管理员";
+            $data['status'] = 1;
+            $logger = $this->get('logger');
+            $logger->error('--chunksMergeAction  --'.$e->getMessage());
         }
-        die('{"status":0}');*/
-        return $re;
+        return new Response(
+            json_encode($data),
+            200,
+            array('Content-Type' => 'application/json')
+        );
     }
 
     /**
@@ -168,24 +165,39 @@ class VodManageController extends Controller
      * @param UpLoad $upload
      * @return array
      */
-    function md5CheckAction($post,UpLoad $upload)
+    function md5CheckAction()
     {
-        $re = array();
-        $repository =  $this->getDoctrine()->getRepository('AppBundle:VodMd5File');
-        $md5_file = $repository->findByJsMd5($post['md5']);
-        if($md5_file){
-            $re['is_exist'] = 1;
-            $re['upload_path'] = $md5_file->getFileName();//保存chunk的文件夹名称和合并后的文件夹名称
-        }else{
-            $re['is_exist'] = 0;
-            $re['upload_path'] = $upload->createRandFileName();
-            $file_map = new VodMd5File();
-            $file_map->setJsMd5($post['md5']);
-            $file_map->setFileName($re['file_name']);
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($file_map);
-            $em->flush();
+        $data = array('status' => 0, 'msg'=>'成功');
+        try{
+            $request = FilterRequest::createFromGlobals();
+            $post = $request->request->all();
+            $repository =  $this->getDoctrine()->getRepository('AppBundle:VodMd5File');
+            $md5_file = $repository->findByJsMd5($post['md5']);
+            if($md5_file){
+                $data['is_exist'] = 1;
+                $data['upload_path'] = $md5_file->getFileName();//保存chunk的文件夹名称和合并后的文件夹名称
+            }else{
+                $data['is_exist'] = 0;
+                $data['upload_path'] = UpLoad::createRandFileName();
+                $file_map = new VodMd5File();
+                $file_map->setJsMd5($post['md5']);
+                $file_map->setFileName($post['file_name']);
+                $file_map->setServerMd5($data['upload_path']);
+                $em = $this->getDoctrine()->getManager();
+                $em->persist($file_map);
+                $em->flush();
+            }
+        }catch (\Exception $e){
+            $data['msg'] = "操作失败,请联系管理员";
+            $data['status'] = 1;
+            $logger = $this->get('logger');
+            $logger->error('--md5CheckAction  --'.$e->getMessage());
         }
-        return $re;
+
+        return new Response(
+            json_encode($data),
+            200,
+            array('Content-Type' => 'application/json')
+        );
     }
 }

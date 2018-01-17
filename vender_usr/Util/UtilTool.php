@@ -2,8 +2,13 @@
 namespace Extend\Util;
 class UtilTool {
     static private $KeyCode = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_$';
+
     /**
-     * @param array $data
+     *
+     * xss转义
+     *
+     * @param $data
+     * @return array
      */
     static public function html_entity_encode_array($data) {
         $result = array();
@@ -12,10 +17,14 @@ class UtilTool {
         }
         return $result;
     }
+
     /**
-     * @param string $json_data 接受到的json
-     * @param number $type      0代表正常解析  1代表解析以后再转换(针对form表单序列化处理)
-     * @return Ambigous <mixed, multitype:mixed >
+     *
+     * json转数组
+     *
+     * @param $json_data
+     * @param int $type
+     * @return array|mixed
      */
     static public function json2array($json_data, $type = 0) {
         $json_data = html_entity_decode($json_data);
@@ -36,7 +45,7 @@ class UtilTool {
      * @param $m string 64进制的数字字符串
      * @param $len integer 返回字符串长度，如果长度不够用0填充，0为不填充
      * @return string
-     * @author 野马
+     * @author ct
      */
     static public function hex64to10($m, $len = 0) {
         $m = (string)$m;
@@ -70,7 +79,7 @@ class UtilTool {
      * @param $m string 10进制的数字字符串
      * @param $len integer 返回字符串长度，如果长度不够用0填充，0为不填充
      * @return string
-     * @author 野马
+     * @author ct
      */
     static public function hex10to64($m, $len = 0) {
         $KeyCode = self::$KeyCode;
@@ -99,7 +108,7 @@ class UtilTool {
      * @param $m string 16进制的数字字符串
      * @param $len integer 返回字符串长度，如果长度不够用0填充，0为不填充
      * @return string
-     * @author 野马
+     * @author ct
      */
  static public function hex16to64($m, $len = 0) {
         $KeyCode = self::$KeyCode;
@@ -130,7 +139,7 @@ class UtilTool {
      * @param $str string 需要切割的字符串
      * @param $len integer 每段字符串的长度
      * @return array
-     * @author 野马
+     * @author ct
      */
     static public function str_rsplit($str, $len = 1) {
         if($str == null || $str == false || $str == '') return false;
