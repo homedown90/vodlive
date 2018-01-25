@@ -1,6 +1,6 @@
 AppBundle\Entity\VodMd5File:
     type: entity
-    table: null
+    table: vod_md5_file
     repositoryClass: AppBundle\Repository\VodMd5FileRepository
     id:
         id:
@@ -38,4 +38,12 @@ AppBundle\Entity\VodMd5File:
             gedmo:
                  timestampable:
                     on: update
+        finishUpload:
+            type: boolean
+            nullable: false
+            column: finish_upload
+        finishMerge:
+            type: boolean
+            nullable: false
+            column: finish_merge
     lifecycleCallbacks: {  }

@@ -169,6 +169,8 @@ $.extend({
                 if(result){
                     $('#' + id).modal('hide').hide();
                     $.proxy(options.success,context)(event,options);
+                }else{
+                    event.stopPropagation();
                 }
 
             });
@@ -181,7 +183,7 @@ $.extend({
             });
         },
         setOption:function(context,options){
-            $.extend(context.op,options);
+            $.extend(context.options,options);
         },
         getOption:function(context,options){
             var data = {};

@@ -32,12 +32,33 @@ admin_vod_data:
 admin_vod_add:
     path: /vod/add
     defaults: { _controller: AppBundle:VodManage:addVod }
+admin_vod_edit:
+    path: /vod/edit
+    defaults: { _controller: AppBundle:VodManage:editVod }
+admin_vod_edit_show:
+    path: /vod/edit/show
+    defaults: { _controller: AppBundle:VodManage:showEdit }
+admin_vod_delete:
+    path: /vod/delete
+    defaults: { _controller: AppBundle:VodManage:deleteVod }
+admin_vod_hls:
+    path: /vod/hls
+    defaults: { _controller: AppBundle:VodManage:hlsVod }
 admin_vod_add_show:
     path: /vod/add/show
     defaults: { _controller: AppBundle:VodManage:showAdd }
 admin_vod_upload:
     path: /vod/upload
     defaults: { _controller: AppBundle:VodManage:upLoad }
+admin_vod_file_check:
+    path: /vod/file/check
+    defaults: { _controller: AppBundle:VodManage:md5Check }
+admin_vod_chunk_check:
+    path: /vod/chunk/check
+    defaults: { _controller: AppBundle:VodManage:chunkCheck }
+admin_vod_chunk_merge:
+    path: /vod/chunk/merge
+    defaults: { _controller: AppBundle:VodManage:chunksMerge }
 
 #-----------------------------分类管理-------------------------------
 admin_class_show:
@@ -55,6 +76,12 @@ admin_class_delete:
 admin_class_edit:
     path: /class/edit
     defaults: { _controller: AppBundle:ClassManage:edit}
+admin_class_select:
+    path: /class/select/all
+    defaults: {_controller: AppBundle:ClassManage:getClass}
+admin_class_search:
+    path: /class/select/search
+    defaults: {_controller: AppBundle:ClassManage:getSearchClass}
 #----------------------------登录-----------------------
 login_check:
     path: /login_check

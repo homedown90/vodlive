@@ -37,6 +37,24 @@ class VodMd5File
      */
     private $modifiedTime;
 
+    /**
+     * @var bool
+     */
+    private $finishUpload;
+
+    /**
+     * @var bool
+     */
+    private $finishMerge;
+
+
+    /**
+     * Set finishUpload.
+     *
+     * @param bool $finishUpload
+     *
+     * @return VodMd5File
+     */
 
     /**
      * Get id.
@@ -166,5 +184,46 @@ class VodMd5File
     public function getModifiedTime()
     {
         return $this->modifiedTime;
+    }
+
+    public function setFinishUpload($finishUpload)
+    {
+        $this->finishUpload = $finishUpload;
+
+        return $this;
+    }
+
+    /**
+     * Get finishUpload.
+     *
+     * @return bool
+     */
+    public function getFinishUpload()
+    {
+        return $this->finishUpload;
+    }
+
+    /**
+     * Set finishMerge.
+     *
+     * @param bool $finishMerge
+     *
+     * @return VodMd5File
+     */
+    public function setFinishMerge($finishMerge)
+    {
+        $this->finishMerge = $finishMerge;
+
+        return $this;
+    }
+
+    /**
+     * Get finishMerge.
+     *
+     * @return bool
+     */
+    public function getFinishMerge()
+    {
+        return $this->finishMerge;
     }
 }

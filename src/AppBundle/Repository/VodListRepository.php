@@ -1,6 +1,8 @@
 <?php
 
 namespace AppBundle\Repository;
+use Doctrine\ORM\Query;
+use Symfony\Component\HttpKernel\Log\Logger;
 
 /**
  * VodListRepository
@@ -10,4 +12,85 @@ namespace AppBundle\Repository;
  */
 class VodListRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function searchVod($search=array(),$orderField='v.id',$order='asc',$offset=0,$limit=50)
+    {
+        try{
+            $qb = $this->getEntityManager()->createQueryBuilder();
+//            $qb_count = $this->getEntityManager()->createQueryBuilder();
+//            $qb_count->from('AppBundle:VodList','v')->leftJoin('AppBundle:VodClass','c','WITH','c.id=v.classId');
+            $qb->from('AppBundle:VodList','v')->leftJoin('AppBundle:VodClass','c','WITH','c.id=v.classId');
+
+            foreach($search as $key => $val){
+                if(empty($val))
+                {
+                    continue;
+                }
+                switch ($key)
+                {
+                    case 'title':
+                        $qb->andWhere('v.title like :title%');
+                        $qb->setParameter('title',$val);
+                        break;
+                    case 'description':
+                        $qb->andWhere('v.description like :description');
+                        $qb->setParameter('description',$val);
+                        break;
+                    case 'classId':
+                        $em = $this->getEntityManager();
+                        $query = $em->createQuery('select c from AppBundle:VodClass c WHERE c.id =:class_id')->setParameter('class_id',$val);
+                        $obj_class = $query->getSingleResult();
+                        if($obj_class->getIsLeaf())
+                        {
+                            $qb->andWhere('v.classId = :classId');
+                            $qb->setParameter('classId',$val);
+                        }else{
+                            $path = $obj_class->getId().','.$obj_class->getPath();
+                            $qb->andWhere('c.path like :path');
+                            $qb->setParameter('path',$path);
+                        }
+                        break;
+                    case 'status':
+                        $qb->andWhere('v.status = :status');
+                        $qb->setParameter('status',$val);
+                        break;
+                    case 'hls':
+                        $qb->andWhere('v.toHls = :hls');
+                        $qb->setParameter('hls',$val);
+                        break;
+                    default:
+                        throw new \Exception('未知的查询字段');
+                }
+            }
+            $qb->select($qb->expr()->countDistinct('v.id'));
+            $count = $qb->getQuery()->getSingleScalarResult();
+
+            $qb->select(array('v.id','v.title','v.description','v.toHls','v.status','v.streams','v.creator','c.name as className','c.path as path','f.fileName'))->leftJoin('AppBundle:VodMd5File','f','WITH','f.id = v.videoId');
+            $qb->setFirstResult($offset)->setMaxResults($limit);
+            $qb->orderBy($orderField,$order);
+            $query = $qb->getQuery();
+
+            $result = $query->getResult(Query::HYDRATE_ARRAY);
+
+            return array('total'=>$count,'rows'=>$result);
+
+        }catch (\Exception $e){
+            throw new \Exception($e->getMessage().'查询出错');
+        }
+
+    }
+    public function getVodAndFileById($id)
+    {
+        try{
+            $qb = $this->getEntityManager()->createQueryBuilder();
+
+            $qb->from('AppBundle:VodList','v')->select(array('v.id','v.title','v.description','v.toHls','v.status','v.streams','v.creator','v.classId','f.id as fileId','f.fileName'))->leftJoin('AppBundle:VodMd5File','f','WITH','f.id = v.videoId');
+            $qb->where('v.id = :id')->setParameter('id',$id);
+            $query = $qb->getQuery();
+            $result = $query->getSingleResult(Query::HYDRATE_ARRAY);
+            return $result;
+        }catch (\Exception $e){
+            throw new \Exception($e->getMessage().'查询出错');
+        }
+
+    }
 }

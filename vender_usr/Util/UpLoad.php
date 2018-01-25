@@ -18,7 +18,9 @@ class UpLoad
 {
 //要配置的内容
     private $path = "";
-    private $chunk_url = '';//"/chunk";
+    public  static $chunk_file = "chunk";//"";
+    private $chunk_url = "";//"";
+    public  static $merge_file = 'merge';// "/merge";
     private $merge_url = '';// "/merge";
     private $parent_file_name = '';
     private $parent_file_size = "";
@@ -33,9 +35,11 @@ class UpLoad
     private $error = 0;
     private $error_msg = "";
     private $allow_type = array('mp4');
-    private $allow_parent_size = 5*1024*1024;
-    private $allow_chunk_size = 5*1024*1024*1024;
-
+    private $allow_parent_size = 5*1024*1024*1024;
+    private $allow_chunk_size = 5*1024*1024;
+    /**
+     * @var string|UploadedFile
+     */
     private $file = '';
 
     //----------------error错误数据
@@ -63,33 +67,37 @@ class UpLoad
      */
     public function __construct($path,$parent_file,$chunk)
     {
-       $this->path  = $path; // 这里得到的是app目录的绝对路
-       $this->chunk_url  = rtrim($this->path,'/')."/chunk/".$parent_file['upload_path']; // chunk目录 分块的目录
-       $this->merge_url  = rtrim($this->path,'/')."/merge/".$parent_file['upload_path']; // merge合并后的目录
+        $this->path  = $path; // 这里得到的是app目录的绝对路
 
-        $this->parent_file_id = $parent_file['id'];
-        $this->parent_file_name = $parent_file['name'];
-        $this->parent_file_size = $parent_file['size'];
-        $this->parent_file_type = $chunk->getExtension();
-        $this->parent_upload_path = $parent_file['upload_path'];
+         $this->setChunkUrl($parent_file['upload_path']);
 
-        $this->chunk_nums = $parent_file['chunks'];
-        $this->chunk_index = $parent_file['chunk'];
-        $this->chunk_tmp_name = $chunk->getFilename();//临时文件名称
-        $this->chunk_size = $chunk->getSize();
-        $this->chunk_tmp_path = $chunk->getPathname();
+         $this->parent_file_id = $parent_file['id'];
+         $this->parent_file_name = $parent_file['name'];
+         $this->parent_file_size = $parent_file['size'];
+         $this->parent_file_type = $parent_file['ext'];
+         $this->parent_upload_path = $parent_file['upload_path'];
 
-        $this->file = $chunk;
+         $this->chunk_nums = $parent_file['chunks'];
+         $this->chunk_index = $parent_file['chunk'];
+         $this->chunk_tmp_name = $chunk->getFilename();//临时文件名称
+         $this->chunk_size = $chunk->getSize();
+         $this->chunk_tmp_path = $chunk->getPathname();
+
+         $this->file = $chunk;
     }
-
+    public function setChunkUrl($file_name)
+    {
+        $this->chunk_url = rtrim($this->path,'/').'/'.self::$chunk_file.'/'.$file_name;
+        self::checkForCreat($this->chunk_url);
+    }
     /**
      * 校验chunk分块是否合法
      * @return bool
      */
     private function checkChunk()
     {
-        if(isset($this->chunk_nums) && $this->chunk_nums > 0){
-            if(isset($this->chunk_index) && $this->chunk_index >= 0){
+        if( $this->chunk_nums > 0){
+            if($this->chunk_index >= 0){
                 return true;
             }
         }else{
@@ -127,10 +135,10 @@ class UpLoad
      * @return bool
      */
     private function checkFileSize(){
-        if ($this->allow_parent_size > $this->parent_file_size) {
+        if ($this->allow_parent_size < $this->parent_file_size) {
             $this->setError(self::ERROR_PATENT_SIZE);
             return false;
-        }else if ($this->allow_chunk_size > $this->chunk_size) {
+        }else if ($this->allow_chunk_size < $this->chunk_size) {
             $this->setError(self::ERROR_CHUNK_SIZE);
             return false;
         }else{
@@ -144,7 +152,7 @@ class UpLoad
      * @return bool
      */
     private function checkFileType(){
-        if (in_array(strtolower($this->fileType), $this->allowtype)) {
+        if (in_array(strtolower($this->parent_file_type), $this->allow_type)) {
             return true;
         }else{
             $this->setError(self::ERROR_PARENT_TYPE);
@@ -194,10 +202,7 @@ class UpLoad
                 $str.= "文件超过最大上传限制";
                 break;
             case self::ERROR_PARENT_TYPE:
-                $str.= "文件分块有误";
-                break;
-            case self::ERROR_CHUNK_INDEX:
-                $str.= "文件类型错误";
+                $str.= "文件类型";
                 break;
             default:
                 $str .= "未知错误";
@@ -212,15 +217,8 @@ class UpLoad
 
     private function moveLoadChunk()
     {
-        $path = rtrim($this->path, '/').'/';
-        $path.= $this->newFileName;
-        if (@move_uploaded_file($this->tmpFileName, $path)) {
-            return true;
-        }else{
-            $this->setError(self::ERROR_CHUCK_MOVE);
-            return false;
-        }
-
+        $path = rtrim($this->chunk_url, '/');
+        $this->file->move($path,$this->chunk_index);
     }
     /**
      *
@@ -266,9 +264,7 @@ class UpLoad
             return false;
         }
         //--------------移动加载的块到制定文件夹下-----------------
-        if (!$this->moveLoadChunk()){
-            return false;
-        }
+        $this->moveLoadChunk();
         return true;
     }
 
@@ -325,5 +321,19 @@ class UpLoad
         $file_name = $user_64.$time_64.$rand_64;*/
        $upload_path = date('YmdHis').'_'.md5(uniqid());
         return $upload_path;
+    }
+    public static function checkForCreat($file_path)
+    {
+
+       if(!file_exists($file_path))
+        {
+            if(!mkdir($file_path,0755,true)){
+                throw new Exception("创建文件失败");
+            }
+        }
+        if(!is_writable($file_path))
+        {
+            throw new Exception("文件不可写");
+        }
     }
 }

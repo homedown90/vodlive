@@ -4,6 +4,9 @@
     <link rel="stylesheet" href="{{ asset('/hiui/css/hiui.min.css') }}">
 
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.1/bootstrap-table.min.css">
+    <link rel="stylesheet" type="text/css" href="{{ asset('/static-dist/formvalidator/css/formValidation.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('/static-dist/webuploader/webuploader.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('/static-dist/app/css/admin.css') }}">
 {% endblock %}
 
 {% block nav %}
@@ -91,10 +94,12 @@
     <script src="{{ asset('/hiui/js/lib/select2/select2.bundle.min.js') }}"></script>
     <script src="{{ asset('/hiui/js/admin.index.js') }}"></script>
     <script src="{{ asset('/hiui/js/admin.utile.js') }}"></script>
+    <script src="{{ asset('/static-dist/app/js/util.js') }}"></script>
     <script src="{{ asset('/hiui/js/lib/bootstrap-table/bootstrap-table.min.js') }}"></script>
     <script src="{{ asset('/hiui/js/bootstrap-treeview.js') }}"></script>
     <script src="{{ asset('/hiui/js/admin.extend.js') }}"></script>
     <script src="{{ asset('/hiui/js/select2tree.js') }}"></script>
-    <link rel="stylesheet" type="text/css" href="{{ asset('/static-dist/webuploader/webuploader.css') }}">
-    <script type="text/javascript" src="{{ asset('/static-dist/webuploader/webuploader.js') }}"></script>
+    <script src="{{ asset('/static-dist/formvalidator/js/formValidation.min.js') }}"></script>
+    <script src="{{ asset('/static-dist/formvalidator/js/framework/bootstrap.js') }}"></script>
+    <script src="{{ asset('/static-dist/formvalidator/js/language/zh_CN.js') }}"></script>
 {% endblock %}

@@ -10,4 +10,5 @@ namespace AppBundle\Repository;
  */
 class VodMd5FileRepository extends \Doctrine\ORM\EntityRepository
 {
+
 }

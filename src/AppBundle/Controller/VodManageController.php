@@ -2,10 +2,13 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\VodList;
 use AppBundle\Entity\VodMd5File;
 use Extend\Symfony\FilterRequest;
 use Extend\Util\UpLoad;
+use Extend\Util\UtilTool;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class VodManageController extends Controller
@@ -29,12 +32,28 @@ class VodManageController extends Controller
      *
      * @return Response
      */
-    public function getDataAction()
+    public function getDataAction(Request $request)
     {
-        /*{"total":800,"rows":[{"id":10,"name":"Item 10","price":"$10"},{"id":11,"name":"Item 11","price":"$11"},{"id":12,"name":"Item 12","price":"$12"},{"id":13,"name":"Item 13","price":"$13"},{"id":14,"name":"Item 14","price":"$14"},{"id":15,"name":"Item 15","price":"$15"},{"id":16,"name":"Item 16","price":"$16"},{"id":17,"name":"Item 17","price":"$17"},{"id":18,"name":"Item 18","price":"$18"},{"id":19,"name":"Item 19","price":"$19"}]}
-         * */
-//        $data = array('total'=>38,'rows'=>array(array('id'=>10,"name"=>"item 10","price"=>"10"),array('id'=>10,"name"=>"item 10","price"=>"10"),array('id'=>10,"name"=>"item 10","price"=>"10")));
         $data = array('total'=>0,'rows'=>array());
+        try{
+            //关闭缓存
+            $logger = $this->get('logger');
+            $post = $request->request->all();
+            $get = $request->query->all();
+            $logger->error('--getDataAction  -post-'.print_r($post,true));
+            $logger->error('--getDataAction  -get-'.print_r($get,true));
+            $ry = $this->getDoctrine()->getRepository('AppBundle:VodList');
+            if(empty($post['search']))
+            {
+                $post['search'] = array();
+            }
+            $data = $ry->searchVod($post['search'],'v.id',$post['order'],$post['offset'],$post['limit']);
+
+
+        }catch (\Exception $e){
+            $logger = $this->get('logger');
+            $logger->error('--getDataAction  --'.$e->getMessage());
+        }
         return new Response(  json_encode($data), 200, array('Content-Type' => 'application/json') );
     }
 
@@ -44,7 +63,22 @@ class VodManageController extends Controller
      */
     public function showAddAction()
     {
+//        $repository = $this->getDoctrine()->getRepository('AppBundle:VodClass');
+//        $class_list = $repository->findAllClassToSelect();
+//        $class_json = json_encode($class_list);
         return $this->render('@App/VodManage/add.ajax.twig');
+    }
+    /**
+     * 编辑添加界面
+     *
+     */
+    public function showEditAction(Request $request)
+    {
+        $post = $request->query->all();
+        $edit_id = $post['id'];
+        $repository =  $this->getDoctrine()->getRepository('AppBundle:VodList');
+        $vod = $repository->getVodAndFileById($edit_id);
+        return $this->render('@App/VodManage/edit.ajax.twig',array('vod'=>$vod));
     }
     /**
      * 添加点播信息
@@ -52,11 +86,136 @@ class VodManageController extends Controller
      */
     public function addVodAction()
     {
-        var_dump($_FILES);
-        var_dump($_POST);
-        var_dump($_GET);
-        die;
+        $data = array('status' => 0, 'msg'=>'成功');
+        try{
+
+            $request = FilterRequest::createFromGlobals();
+            $vod_info = $request->request->get('vod');
+            //------------判断是否存在该文件
+
+            //------------保存该文件
+            $vodObject = new VodList();
+            $vodObject->setTitle($vod_info['title']);
+            $vodObject->setDescription($vod_info['description']);
+            $vodObject->setVideoId($vod_info['fileId']);
+            $vodObject->setClassId($vod_info['classId']);
+            $vodObject->setCreator(UtilTool::getUserId());
+            $em = $this->getDoctrine()->getManager();
+            // 告诉Doctrine你希望（最终）存储Product对象（还没有语句执行）
+            $em->persist($vodObject);
+            $em->flush();
+        }catch (\Exception $e){
+            $data['msg'] = "操作失败,请联系管理员";
+            $data['status'] = 1;
+            $logger = $this->get('logger');
+            $logger->error('--addVodAction--'.$e->getMessage());
+        }
+
+        return new Response(
+            json_encode($data),
+            200,
+            array('Content-Type' => 'application/json')
+        );
     }
+    public function editVodAction()
+    {
+        $data = array('status' => 0, 'msg'=>'成功');
+        try{
+
+            $request = FilterRequest::createFromGlobals();
+            $vod_info = $request->request->get('vod');
+            //------------判断是否存在该文件
+
+            //------------保存该文件
+            $vodObject = new VodList();
+            $vodObject->setTitle($vod_info['title']);
+            $vodObject->setDescription($vod_info['description']);
+            $vodObject->setVideoId($vod_info['fileId']);
+            $vodObject->setClassId($vod_info['classId']);
+            $vodObject->setCreator(UtilTool::getUserId());
+            $em = $this->getDoctrine()->getManager();
+            // 告诉Doctrine你希望（最终）存储Product对象（还没有语句执行）
+            $em->persist($vodObject);
+            $em->flush();
+        }catch (\Exception $e){
+            $data['msg'] = "操作失败,请联系管理员";
+            $data['status'] = 1;
+            $logger = $this->get('logger');
+            $logger->error('--addVodAction--'.$e->getMessage());
+        }
+        return new Response(
+            json_encode($data),
+            200,
+            array('Content-Type' => 'application/json')
+        );
+    }
+    public function deleteVodAction()
+    {
+        $data = array('status' => 0, 'msg'=>'成功');
+        try{
+
+            $request = FilterRequest::createFromGlobals();
+            $vod_info = $request->request->get('vod');
+            //------------判断是否存在该文件
+
+            //------------保存该文件
+            $vodObject = new VodList();
+            $vodObject->setTitle($vod_info['title']);
+            $vodObject->setDescription($vod_info['description']);
+            $vodObject->setVideoId($vod_info['fileId']);
+            $vodObject->setClassId($vod_info['classId']);
+            $vodObject->setCreator(UtilTool::getUserId());
+            $em = $this->getDoctrine()->getManager();
+            // 告诉Doctrine你希望（最终）存储Product对象（还没有语句执行）
+            $em->persist($vodObject);
+            $em->flush();
+        }catch (\Exception $e){
+            $data['msg'] = "操作失败,请联系管理员";
+            $data['status'] = 1;
+            $logger = $this->get('logger');
+            $logger->error('--addVodAction--'.$e->getMessage());
+        }
+
+        return new Response(
+            json_encode($data),
+            200,
+            array('Content-Type' => 'application/json')
+        );
+    }
+    public function hlsVodAction()
+    {
+        $data = array('status' => 0, 'msg'=>'成功');
+        try{
+
+            $request = FilterRequest::createFromGlobals();
+            $vod_info = $request->request->get('vod');
+            //------------判断是否存在该文件
+
+            //------------保存该文件
+            $vodObject = new VodList();
+            $vodObject->setTitle($vod_info['title']);
+            $vodObject->setDescription($vod_info['description']);
+            $vodObject->setVideoId($vod_info['fileId']);
+            $vodObject->setClassId($vod_info['classId']);
+            $vodObject->setCreator(UtilTool::getUserId());
+            $em = $this->getDoctrine()->getManager();
+            // 告诉Doctrine你希望（最终）存储Product对象（还没有语句执行）
+            $em->persist($vodObject);
+            $em->flush();
+        }catch (\Exception $e){
+            $data['msg'] = "操作失败,请联系管理员";
+            $data['status'] = 1;
+            $logger = $this->get('logger');
+            $logger->error('--addVodAction--'.$e->getMessage());
+        }
+
+        return new Response(
+            json_encode($data),
+            200,
+            array('Content-Type' => 'application/json')
+        );
+    }
+
     /**
      *上传文件
      */
@@ -64,6 +223,7 @@ class VodManageController extends Controller
     {
         $data = array('status' => 0, 'msg'=>'成功');
         try{
+//            sleep(10);
             $logger = $this->get('logger');
             set_time_limit (0);
             $response = new Response();
@@ -80,7 +240,7 @@ class VodManageController extends Controller
             $upload_url = $this->getParameter('brochures_directory'); // 这里得到的是app目录的绝对路
 
             //用于断点续传，验证指定分块是否已经存在，避免重复上传
-             $uploader =  new UpLoad($upload_url,$post,$files);
+             $uploader =  new UpLoad($upload_url,$post,$files['file']);
              $logger->error('--upLoadAction--post  --'.print_r($post,true));
              $logger->error('--upLoadAction--file  --'.print_r($files,true));
              if($uploader->uploadChunk() !== false)
@@ -97,12 +257,9 @@ class VodManageController extends Controller
             $logger = $this->get('logger');
             $logger->error('--upLoadAction  --'.$e->getMessage());
         }
-
-        return new Response(
-            json_encode($data),
-            200,
-            array('Content-Type' => 'application/json')
-        );
+        $response->setContent(json_encode($data));
+        $response->headers->set('Content-Type', 'application/json');
+        return $response;
     }
     /**
      * 合并分块文件
@@ -113,32 +270,38 @@ class VodManageController extends Controller
     {
         $data = array('status' => 0, 'msg'=>'成功');
         try{
+            $logger = $this->get('logger');
+            $response = new Response();
+            //关闭缓存
             $request = FilterRequest::createFromGlobals();
             $post = $request->request->all();
+            $files = $request->files->all();
             $upload_url = $this->getParameter('brochures_directory'); // 这里得到的是app目录的绝对路
+            $logger->error('--upLoadAction--post  --'.print_r($post,true));
+            $logger->error('--upLoadAction--file  --'.print_r($files,true));
             if (file_exists(rtrim($upload_url,'/')."/chunk/{$post['upload_path']}/{$post['chunk_index']}") ) {
                 $data['is_exist'] = 1;
+                $data['msg'] = 'chunk已存在';
             }else{
                 $data['is_exist'] = 0;
-                $data['msg'] = 'chunk已存在';
             }
         }catch (\Exception $e){
             $data['msg'] = "操作失败,请联系管理员";
             $data['status'] = 1;
-            $logger = $this->get('logger');
             $logger->error('--chunkCheckAction  --'.$e->getMessage());
         }
-        return new Response(
-            json_encode($data),
-            200,
-            array('Content-Type' => 'application/json')
-        );
+        $response->setContent(json_encode($data));
+        $response->headers->set('Content-Type', 'application/json');
+        return $response;
     }
 
     function chunksMergeAction()
     {
         $data = array('status' => 0, 'msg'=>'成功');
         try{
+            $response = new Response();
+            //关闭缓存
+
             $request = FilterRequest::createFromGlobals();
             $post = $request->request->all();
             $files = $request->files->all();
@@ -150,11 +313,9 @@ class VodManageController extends Controller
             $logger = $this->get('logger');
             $logger->error('--chunksMergeAction  --'.$e->getMessage());
         }
-        return new Response(
-            json_encode($data),
-            200,
-            array('Content-Type' => 'application/json')
-        );
+        $response->setContent(json_encode($data));
+        $response->headers->set('Content-Type', 'application/json');
+        return $response;
     }
 
     /**
@@ -169,24 +330,41 @@ class VodManageController extends Controller
     {
         $data = array('status' => 0, 'msg'=>'成功');
         try{
+            $response = new Response();
+            //关闭缓存
+            $upload_url = $this->getParameter('brochures_directory'); // 这里得到的是app目录的绝对路
             $request = FilterRequest::createFromGlobals();
             $post = $request->request->all();
             $repository =  $this->getDoctrine()->getRepository('AppBundle:VodMd5File');
             $md5_file = $repository->findByJsMd5($post['md5']);
-            if($md5_file){
-                $data['is_exist'] = 1;
-                $data['upload_path'] = $md5_file->getFileName();//保存chunk的文件夹名称和合并后的文件夹名称
+            if(!empty($md5_file)){
+                $file_name = $md5_file[0]->getFileName();
+                $file_url = rtrim($upload_url,"/").'/'.Upload::$chunk_file.'/'.$file_name;
+                UpLoad::checkForCreat($file_url);
+                if($md5_file[0]->getFinishMerge() == false)
+                {
+                    $data['is_finish'] = 0;
+                }else{
+                    $data['is_finish'] = 1;
+                }
+                $data['upload_path'] = $md5_file[0]->getServerMd5();
+                $data['file_id'] = $md5_file[0]->getId();
             }else{
-                $data['is_exist'] = 0;
-                $data['upload_path'] = UpLoad::createRandFileName();
+                $file_name = UpLoad::createRandFileName();
+                $file_url = rtrim($upload_url,"/").'/'.Upload::$chunk_file.'/'.$file_name;
+                UpLoad::checkForCreat($file_url);
                 $file_map = new VodMd5File();
                 $file_map->setJsMd5($post['md5']);
-                $file_map->setFileName($post['file_name']);
-                $file_map->setServerMd5($data['upload_path']);
+                $file_map->setFileName($file_name);
+                $file_map->setServerMd5();
                 $em = $this->getDoctrine()->getManager();
                 $em->persist($file_map);
                 $em->flush();
+                $data['is_finish'] = 0;
+                $data['file_id'] = $file_map->getId();
+                $data['upload_path'] = $file_map->getServerMd5();
             }
+
         }catch (\Exception $e){
             $data['msg'] = "操作失败,请联系管理员";
             $data['status'] = 1;
@@ -194,10 +372,9 @@ class VodManageController extends Controller
             $logger->error('--md5CheckAction  --'.$e->getMessage());
         }
 
-        return new Response(
-            json_encode($data),
-            200,
-            array('Content-Type' => 'application/json')
-        );
+        $response->setContent(json_encode($data));
+        $response->headers->set('Content-Type', 'application/json');
+//        $response->setStatusCode(Response::HTTP_REQUEST_TIMEOUT);
+        return $response;
     }
 }

@@ -39,4 +39,4 @@ AppBundle\Entity\VodClass:
             type: boolean
             nullable: false
             column: is_leaf
-    lifecycleCallbacks: {  }
+    lifecycleCallbacks: { }

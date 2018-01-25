@@ -1,6 +1,7 @@
 <?php
 
 namespace AppBundle\Repository;
+use Doctrine\ORM\Query;
 
 /**
  * VodClassRepository
@@ -16,5 +17,13 @@ class VodClassRepository extends \Doctrine\ORM\EntityRepository
                 'SELECT c FROM AppBundle:VodClass c ORDER BY c.id ASC'
             )
             ->getResult();
+    }
+    public function findAllClassToSelect(){
+        return $this->getEntityManager()
+            ->createQuery(
+                'SELECT c.id as id, c.name as text , c.parentId as parent,ABS(c.isLeaf-1) as disabled FROM AppBundle:VodClass c'
+            )
+            ->getResult(Query::HYDRATE_ARRAY );
+
     }
 }

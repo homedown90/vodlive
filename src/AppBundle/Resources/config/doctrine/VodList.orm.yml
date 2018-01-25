@@ -16,18 +16,11 @@ AppBundle\Entity\VodList:
         description:
             type: text
             nullable: true
-        onlineNum:
-            type: integer
-            nullable: true
-            column: online_num
-        reserveNum:
-            type: integer
-            nullable: true
-            column: reserve_num
         status:
             type: string
             length: 255
-            nullable: true
+            options:
+                default: 'closed'
         pictureUrl:
             type: string
             length: 255
@@ -36,6 +29,9 @@ AppBundle\Entity\VodList:
             type: string
             length: 255
         creator:
+            type: integer
+            nullable: true
+        videoId:
             type: integer
             nullable: true
         createTime:
@@ -52,4 +48,35 @@ AppBundle\Entity\VodList:
             gedmo:
                  timestampable:
                     on: update
+        classId:
+            type: integer
+            nullable: false
+            column: class_id
+        playNum:
+            type: integer
+            nullable: true
+            column: play_num
+            options:
+                default: 0
+        originUrl:
+            type: string
+            length: 255
+            column: origin_url
+        mediaName:
+            type: string
+            length: 255
+            column: media_name
+            options:
+                default: ''
+        mediaUrl:
+            type: string
+            length: 255
+            column: media_url
+            options:
+                default: ''
+        toHls:
+            type: boolean
+            column: to_hls
+            options:
+              default: 0
     lifecycleCallbacks: {  }

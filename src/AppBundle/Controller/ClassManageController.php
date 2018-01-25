@@ -181,4 +181,41 @@ class ClassManageController extends Controller {
         }
         return $tempSrcArr;
     }
+
+    public function getClassAction()
+    {
+        $data = array(array('id'=>'0','parent'=>'-1','text'=>'无'));
+        try{
+            $repository = $this->getDoctrine()->getRepository('AppBundle:VodClass');
+            $class_list = $repository->findAllClassToSelect();
+            $data = $class_list;
+        }catch (\Exception $e){
+            $logger = $this->get('logger');
+            $logger->error('--getClassAction--'.$e->getMessage());
+        }
+        return new Response(
+            json_encode($data),
+            200,
+            array('Content-Type' => 'application/json')
+        );
+    }
+    public function getSearchClassAction()
+    {
+        $data = array(array('id'=>0,'text'=>'无'));
+        try{
+            $repository = $this->getDoctrine()->getRepository('AppBundle:VodClass');
+            $class_list = $repository->findAllClassToSelect();
+            array_push($class_list,array('id'=>0,'text'=>'全部'));
+            $data = $class_list;
+        }catch (\Exception $e){
+            $logger = $this->get('logger');
+            $logger->error('--getClassAction--'.$e->getMessage());
+        }
+        return new Response(
+            json_encode($data),
+            200,
+            array('Content-Type' => 'application/json')
+        );
+    }
+
 }

@@ -162,6 +162,10 @@ class UtilTool {
         }
         return $hash;
     }
+    static public function getUserId()
+    {
+        return 1;
+    }
 }
 
 ?>

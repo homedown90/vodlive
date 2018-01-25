@@ -7,35 +7,26 @@ namespace AppBundle\Entity;
  */
 class VodList
 {
+    
     /**
      * @var int
      */
     private $id;
 
     /**
-     * @var string
+     * @var string|null
      */
     private $title;
 
     /**
-     * @var string
+     * @var string|null
      */
     private $description;
 
     /**
-     * @var int
-     */
-    private $onlineNum;
-
-    /**
-     * @var int
-     */
-    private $reserveNum;
-
-    /**
      * @var string
      */
-    private $status;
+    private $status = 'closed';
 
     /**
      * @var string
@@ -48,9 +39,14 @@ class VodList
     private $streams;
 
     /**
-     * @var int
+     * @var int|null
      */
     private $creator;
+
+    /**
+     * @var int|null
+     */
+    private $videoId;
 
     /**
      * @var \DateTime
@@ -62,9 +58,39 @@ class VodList
      */
     private $modifiedTime;
 
+    /**
+     * @var int
+     */
+    private $classId;
 
     /**
-     * Get id
+     * @var int|null
+     */
+    private $playNum = 0;
+
+    /**
+     * @var string
+     */
+    private $originUrl;
+
+    /**
+     * @var string
+     */
+    private $mediaName;
+
+    /**
+     * @var string
+     */
+    private $mediaUrl;
+
+    /**
+     * @var bool
+     */
+    private $toHls = 0;
+
+
+    /**
+     * Get id.
      *
      * @return int
      */
@@ -74,13 +100,13 @@ class VodList
     }
 
     /**
-     * Set title
+     * Set title.
      *
-     * @param string $title
+     * @param string|null $title
      *
      * @return VodList
      */
-    public function setTitle($title)
+    public function setTitle($title = null)
     {
         $this->title = $title;
 
@@ -88,9 +114,9 @@ class VodList
     }
 
     /**
-     * Get title
+     * Get title.
      *
-     * @return string
+     * @return string|null
      */
     public function getTitle()
     {
@@ -98,13 +124,13 @@ class VodList
     }
 
     /**
-     * Set description
+     * Set description.
      *
-     * @param string $description
+     * @param string|null $description
      *
      * @return VodList
      */
-    public function setDescription($description)
+    public function setDescription($description = null)
     {
         $this->description = $description;
 
@@ -112,9 +138,9 @@ class VodList
     }
 
     /**
-     * Get description
+     * Get description.
      *
-     * @return string
+     * @return string|null
      */
     public function getDescription()
     {
@@ -122,55 +148,7 @@ class VodList
     }
 
     /**
-     * Set onlineNum
-     *
-     * @param integer $onlineNum
-     *
-     * @return VodList
-     */
-    public function setOnlineNum($onlineNum)
-    {
-        $this->onlineNum = $onlineNum;
-
-        return $this;
-    }
-
-    /**
-     * Get onlineNum
-     *
-     * @return int
-     */
-    public function getOnlineNum()
-    {
-        return $this->onlineNum;
-    }
-
-    /**
-     * Set reserveNum
-     *
-     * @param integer $reserveNum
-     *
-     * @return VodList
-     */
-    public function setReserveNum($reserveNum)
-    {
-        $this->reserveNum = $reserveNum;
-
-        return $this;
-    }
-
-    /**
-     * Get reserveNum
-     *
-     * @return int
-     */
-    public function getReserveNum()
-    {
-        return $this->reserveNum;
-    }
-
-    /**
-     * Set status
+     * Set status.
      *
      * @param string $status
      *
@@ -184,7 +162,7 @@ class VodList
     }
 
     /**
-     * Get status
+     * Get status.
      *
      * @return string
      */
@@ -194,7 +172,7 @@ class VodList
     }
 
     /**
-     * Set pictureUrl
+     * Set pictureUrl.
      *
      * @param string $pictureUrl
      *
@@ -208,7 +186,7 @@ class VodList
     }
 
     /**
-     * Get pictureUrl
+     * Get pictureUrl.
      *
      * @return string
      */
@@ -218,7 +196,7 @@ class VodList
     }
 
     /**
-     * Set streams
+     * Set streams.
      *
      * @param string $streams
      *
@@ -232,7 +210,7 @@ class VodList
     }
 
     /**
-     * Get streams
+     * Get streams.
      *
      * @return string
      */
@@ -242,13 +220,13 @@ class VodList
     }
 
     /**
-     * Set creator
+     * Set creator.
      *
-     * @param integer $creator
+     * @param int|null $creator
      *
      * @return VodList
      */
-    public function setCreator($creator)
+    public function setCreator($creator = null)
     {
         $this->creator = $creator;
 
@@ -256,9 +234,9 @@ class VodList
     }
 
     /**
-     * Get creator
+     * Get creator.
      *
-     * @return int
+     * @return int|null
      */
     public function getCreator()
     {
@@ -266,7 +244,35 @@ class VodList
     }
 
     /**
-     * Set createTime
+     * Set videoId.
+     *
+     * @param int|null $videoId
+     *
+     * @return VodList
+     */
+    public function setVideoId($videoId = null)
+    {
+        if (empty($videoId))
+        {
+           return;
+        }
+        $this->videoId = $videoId;
+
+        return $this;
+    }
+
+    /**
+     * Get videoId.
+     *
+     * @return int|null
+     */
+    public function getVideoId()
+    {
+        return $this->videoId;
+    }
+
+    /**
+     * Set createTime.
      *
      * @param \DateTime $createTime
      *
@@ -280,7 +286,7 @@ class VodList
     }
 
     /**
-     * Get createTime
+     * Get createTime.
      *
      * @return \DateTime
      */
@@ -290,7 +296,7 @@ class VodList
     }
 
     /**
-     * Set modifiedTime
+     * Set modifiedTime.
      *
      * @param \DateTime $modifiedTime
      *
@@ -304,7 +310,7 @@ class VodList
     }
 
     /**
-     * Get modifiedTime
+     * Get modifiedTime.
      *
      * @return \DateTime
      */
@@ -312,5 +318,157 @@ class VodList
     {
         return $this->modifiedTime;
     }
-}
 
+    /**
+     * Set classId.
+     *
+     * @param int $classId
+     *
+     * @return VodList
+     */
+    public function setClassId($classId)
+    {
+        $this->classId = $classId;
+
+        return $this;
+    }
+
+    /**
+     * Get classId.
+     *
+     * @return int
+     */
+    public function getClassId()
+    {
+        return $this->classId;
+    }
+
+    /**
+     * Set playNum.
+     *
+     * @param int|null $playNum
+     *
+     * @return VodList
+     */
+    public function setPlayNum($playNum = null)
+    {
+        if (empty($videoId))
+        {
+            return;
+        }
+
+        $this->playNum = $playNum;
+
+        return $this;
+    }
+
+    /**
+     * Get playNum.
+     *
+     * @return int|null
+     */
+    public function getPlayNum()
+    {
+        return $this->playNum;
+    }
+
+    /**
+     * Set originUrl.
+     *
+     * @param string $originUrl
+     *
+     * @return VodList
+     */
+    public function setOriginUrl($originUrl)
+    {
+        $this->originUrl = $originUrl;
+
+        return $this;
+    }
+
+    /**
+     * Get originUrl.
+     *
+     * @return string
+     */
+    public function getOriginUrl()
+    {
+        return $this->originUrl;
+    }
+
+    /**
+     * Set mediaName.
+     *
+     * @param string $mediaName
+     *
+     * @return VodList
+     */
+    public function setMediaName($mediaName)
+    {
+        $this->mediaName = $mediaName;
+
+        return $this;
+    }
+
+    /**
+     * Get mediaName.
+     *
+     * @return string
+     */
+    public function getMediaName()
+    {
+        return $this->mediaName;
+    }
+
+    /**
+     * Set mediaUrl.
+     *
+     * @param string $mediaUrl
+     *
+     * @return VodList
+     */
+    public function setMediaUrl($mediaUrl)
+    {
+        $this->mediaUrl = $mediaUrl;
+
+        return $this;
+    }
+
+    /**
+     * Get mediaUrl.
+     *
+     * @return string
+     */
+    public function getMediaUrl()
+    {
+        return $this->mediaUrl;
+    }
+
+    /**
+     * Set toHls.
+     *
+     * @param bool $toHls
+     *
+     * @return VodList
+     */
+    public function setToHls($toHls)
+    {
+        if (empty($videoId))
+        {
+            return;
+        }
+        $this->toHls = $toHls;
+
+        return $this;
+    }
+
+    /**
+     * Get toHls.
+     *
+     * @return bool
+     */
+    public function getToHls()
+    {
+        return $this->toHls;
+    }
+}

@@ -3,34 +3,41 @@
 {% block table_form %}
 <div class="row" id="vod_row">
 {#------------搜索表单-------------------#}
-<div class="col-sm-8">
-<form class="be-form-inline form-inline">
+<div class="col-sm-10">
+<form class="be-form-inline form-inline" >
 
 <div class="form-group">
 <label class="control-label" for="admin_search_title">标题<i>*</i></label>
-<input type="text" class="form-control" name="title" placeholder="请输入内容…" required/>
+<input type="text" class="form-control" name="search[title]" placeholder="请输入内容…" />
 </div>
 
 <div class="form-group">
 <label class="control-label" for="admin_search_desc">描述<i>*</i></label>
-<input type="text" class="form-control" name="description" placeholder="请输入内容…" required/>
+<input type="text" class="form-control" name="search[description]" placeholder="请输入内容…" />
+</div>
+
+<div class="form-group">
+<label class="control-label" for="admin_search_publis">分类<i>*</i></label>
+    <select name="search[classId]" class="form-control" style="width: 20rem">
+        <option value="0">全部</option>
+    </select>
 </div>
 
 <div class="form-group">
 <label class="control-label" for="admin_search_publis">是否发布<i>*</i></label>
-<select class="form-control" name="status">
+<select class="form-control" name="search[status]">
+    <option value="">全部</option>
+    <option value="closed">关闭</option>
+    <option value="draft">未发布</option>
+    <option value="published">发布</option>
+</select>
+</div>
+<div class="form-group">
+<label class="control-label" for="admin_search_cut">是否切流成功<i>*</i></label>
+<select class="form-control" name="search[hls]">
     <option value="">全部</option>
     <option value="0">否</option>
     <option value="1">是</option>
-</select>
-</div>
-
-<div class="form-group">
-<label class="control-label" for="admin_search_cut">是否切流成功<i>*</i></label>
-<select class="form-control" name="cuted">
-    <option value="">全部</option>
-    <option value="0">是</option>
-    <option value="1">否</option>
 </select>
 </div>
 
@@ -39,7 +46,7 @@
 </form>
 </div>
 {#------添加按钮-------------------------------#}
-<div class="col-sm-4">
+<div class="col-sm-2">
     <button class="btn btn-primary" name="addVod">添加</button>
 </div>
 </div>
@@ -52,30 +59,89 @@
 
 {% block table_script %}
 <script>
+    //# sourceURL=show_vod.js
 $(function () {
+
     //--------------------------初始化table组件-----------------------------------------
     var $table = $('#table');
+    var $form = $('#vod_row form');
+    var default_form_data = {};
+    $.util().formFormatter(default_form_data,$form);
+    function refreshVod($form,$table)
+    {
+        var form_data = $.util().formFormatter({},$form);
+        $table.bootstrapTable('refresh',{query:form_data});
+
+    }
+    //--------------------------初始化form表单的校验
+    $form.submit(function(e){
+        e.preventDefault();
+        refreshVod($form,$table);
+    });
+    $form.find('[name=search]').on('click',function (e) {
+         e.preventDefault();
+         $form.submit();
+    });
+    $form.find('[name=reset]').on('click',function (e) {
+         e.preventDefault();
+         $.each(default_form_data,function(k,v){
+             $form.find('[name="'+k+'"]').val(v);
+             if($form.find('[name="'+k+'"]').prop('tagName') == "SELECT" && k=="search[classId]")
+             {
+                 $form.find('[name="'+k+'"]').trigger('change');
+             }
+
+         });
+        $form.submit();
+    });
+    $form.find('[name="search[classId]"]').on('click',function (e) {
+         e.preventDefault();
+        //------------异步加载分类下拉框
+        $.post("{{ path('admin_class_search') }}",{},function(r){
+            $.each(r,function(i,n){
+                r[i].disabled = 1;
+                if(r[i].id == "0")
+                {
+                    r[i].selected = true;
+                }
+            });
+            $form.find('[name="search[classId]"]').select2tree({
+                data:r,
+                minimumResultsForSearch : Infinity
+            });
+            default_form_data["search[classId]"] = 0;
+        });
+    });
     //------------------------添加初始化组件的工具函数，如formatter 格式化等回调函数
     $.extend({
         table_util: {
             operateFormatter: function (value, row, index) {
                 return [
-                    '<span class="be-table-hidden-info">',
-                    '<a href="#" class="btn btn-xs btn-link-info J_beTableAction" title="编辑">',
+                    '<div class="be-table-hidden-info">',
+                    '<a href="#" class="btn btn-xs btn-link-info J_beTableAction table-edit" data-index="'+row.id+'"  title="编辑">',
                     '<i class="fa fa-pencil-square-o be-icon"></i>',
                     '</a>',
-                    '<a href="#" class="btn btn-xs btn-link-danger J_beTableAction" title="删除">',
+                    '<a href="#" class="btn btn-xs btn-link-danger J_beTableAction table-delete" data-index="'+row.id+'" title="删除">',
                     '<i class="fa fa-trash be-icon"></i>',
                     '</a>',
-                    '<a href="#" class="btn btn-xs btn-link-danger J_beTableAction" title="预览">',
-                    '<i class="fa fa-trash be-icon"></i>',
-                    '</a>',
-                    '</span>',
+                    '<div class="input-group" style="display: inline-block">' +
+                    '<a class="btn btn-xs btn-link dropdown-toggle" data-toggle="dropdown" aria-haspopup="true">...</a>' +
+                    '<ul class="dropdown-menu dropdown-menu-left">' +
+                    '<li><button class="btn btn-xs btn-link-default J_beTableAction table-hls" data-index="'+row.id+'" data-hls="closed" title="关闭"><i class="fa fa-heart-o be-icon"></i> 关闭</button></li>' +
+                    '<li><button class="btn btn-xs btn-link-default J_beTableAction table-hls" data-index="'+row.id+'"  data-hls="draft" title="未发布"><i class="fa fa-thumbs-o-up be-icon"></i> 未发布</button></li>' +
+                    '<li><button class="btn btn-xs btn-link-default J_beTableAction table-hls" data-index="'+row.id+'" data-hls="published" title="发布"><i class="fa fa-thumbs-o-down be-icon"></i> 发布</button></li>' +
+                    '</ul>' +
+                    '</div>',
+                    '</div>',
                 ].join('');
             },
             isToCNFormatter: function (value, row, index) {
                 var f_v = ['否', '是'];
-                return f_v[parseInt($.trim(value))];
+                if( value == false || value =="false"){
+                    return f_v[0];
+                }else{
+                    return f_v[1];
+                }
             },
             statusFormatter: function (value, row, index) {
                 var status = {
@@ -84,25 +150,35 @@ $(function () {
                     'published': "发布"
                 };
                 return status[value];
-            },
-
+            },indexFormatter: function (value, row, index) {
+                var opt = $table.bootstrapTable('getOptions');
+                var total = opt.pageSize*(opt.pageNumber-1);
+                return total+index+1;
+            }
         }
     });
+
     //------------------------------使用json 初始化table 组件
     BE.initPlugin('bootstrapTable', $table, {
         search: false,
-        height: "400",
+        height: "800",
         sidePagination: "server",
         pagination: true,
-        pageSize: 15,
-        pageList: [10, 25, 50, 100, 'ALL'],
+        pageSize: 10,
         locale: "zh-CN",
         idField: "id",
         url: "{{ path('admin_vod_data') }}",
         method: "post",
+        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+        dataType: 'json',
         columns: [{
             field: 'index',
             title: '行号',
+            formatter: $.table_util.indexFormatter
+        },{
+            field: 'id',
+            title: 'id号',
+            visible: false
         }, {
             field: 'title',
             title: '标题'
@@ -110,7 +186,14 @@ $(function () {
             field: 'description',
             title: '描述'
         }, {
-            field: 'to_hls',
+            field: 'className',
+            title: '分类'
+        }, {
+            field: 'classId',
+            title: '分类Id',
+            visible: false
+        }, {
+            field: 'toHls',
             title: '切片',
             formatter: $.table_util.isToCNFormatter
         }, {
@@ -118,17 +201,44 @@ $(function () {
             title: '发布',
             formatter: $.table_util.statusFormatter
         }, {
-            field: 'type',
+            field: 'fileName',
             title: '媒体类型'
         }, {
-            field: 'stream',
+            field: 'streams',
             title: '输出流'
         }, {
-            field: 'operator',
+            field: 'creator',
             title: '操作',
+            align: 'center',
             formatter: $.table_util.operateFormatter
-        }]
+        }],
+        onLoadSuccess: function () {
+            $('.J_beTableAction.table-edit').on('click',function(){
+                var index = $(this).data('index');
+                $.mywind('dialog',{
+                    url:"{{ path('admin_vod_edit_show') }}?id="+index,
+                    success:function(){
+
+                    }
+                });
+            });
+            $('.J_beTableAction.table-delete').on('click',function(){
+                var index = $(this).data('index');
+                $.post("{{ path('admin_vod_delete') }}",{id:index},function(res){
+
+                },'json');
+            });
+            $('.J_beTableAction.table-hls').on('click',function(){
+                var index = $(this).data('index');
+                var hls = $(this).data('hls');
+                $.post("{{ path('admin_vod_hls') }}",{id:index,hls:hls},function(res){
+
+                },'json');
+            })
+        }
     });
+
+    BE.initPlugin('upload', $("#add_dialog_upload"));
     $('#vod_row button[name=addVod]').on('click',function (event) {
         event.preventDefault();
         $.mywind('dialog',{
@@ -137,8 +247,7 @@ $(function () {
 
             }
         });
-    })
-    BE.initPlugin('upload', $("#add_dialog_upload"));
+    });
 });
 
 </script>

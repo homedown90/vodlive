@@ -1,0 +1,11 @@
+/*添加选择框的error和success的样式*/
+.has-error div.control-group{
+    border-color: #a94442;
+    border-style: solid;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075)
+}
+.has-success div.control-group{
+    border-color: #3c763d;
+    border-style: solid;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075)
+}
