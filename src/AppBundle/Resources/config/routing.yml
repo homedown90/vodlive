@@ -18,6 +18,12 @@ home_vod_list:
 home_vod_item:
     path: /vod/item
     defaults: { _controller: AppBundle:VodShow:showVodItem }
+home_vod_cart_list:
+    path: /vod/cart/list
+    defaults: { _controller: AppBundle:VodShow:showVodByClass }
+home_vod_cart_page:
+    path: /vod/cart/page
+    defaults: { _controller: AppBundle:VodShow:showVodCartPage }
 #-----------------------------管理后台主页---------------------------
 admin_page:
     path: /admin

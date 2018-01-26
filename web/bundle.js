@@ -13544,9 +13544,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 $(function () {
-    $('#myTab a').on('mousemove', function (e) {
+    $('nav[id^=VodListTab_] a').on('mousemove', function (e) {
         e.preventDefault();
         $(this).tab('show');
+        var tab_id = $(this).attr('href');
+        var tab_url = $(this).data('url');
+        $(tab_id).find('div.row').hide().load(tab_url).show(1000);
     });
 });
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(0)))

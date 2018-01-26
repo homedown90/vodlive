@@ -1,0 +1,26 @@
+{% for vod in vod_list %}
+    <div class="col-4">
+        <div class="card card-link" style="margin-top: 15px; margin-bottom: 15px">
+            <a href="{{ path('home_vod_item') }}?id={{ vod.id }}" class="com-a">
+                <img class="card-img-top" src="{{ asset('/assets/images/IMG_7717.JPG') }}"
+                     alt="Card image cap">
+                <div class="card-body">
+                    <h6 class="com-card-h"><span class="com-card-strong">标题：</span>{{ vod.title|slice(0,20) }}</h6>
+                    <h6 class="com-card-h"><span class="com-card-strong">时长：</span>{{ vod.time }}</h6>
+                    <h6 class="com-card-h"><span class="com-card-strong">点播：</span>{{ vod.playNum|default(0) }}次</h6>
+                </div>
+            </a>
+        </div>
+    </div>
+    <script>
+        $(function(){
+            var total_vod = {{ vod_list.total }};
+            var page_size = {{ vod_list.pageSize }};
+            $('#page-selection').bootpag({
+                total: Math.ceil( total_vod/page_size),
+                page:{{ vod_list.page }}
+            })
+        });
+
+    </script>
+{% endfor %}

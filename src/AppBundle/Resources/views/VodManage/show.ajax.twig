@@ -99,7 +99,7 @@ $(function () {
         //------------异步加载分类下拉框
         $.post("{{ path('admin_class_search') }}",{},function(r){
             $.each(r,function(i,n){
-                r[i].disabled = 1;
+                r[i].disabled = 0;
                 if(r[i].id == "0")
                 {
                     r[i].selected = true;
@@ -127,7 +127,6 @@ $(function () {
                     '<div class="input-group" style="display: inline-block">' +
                     '<a class="btn btn-xs btn-link dropdown-toggle" data-toggle="dropdown" aria-haspopup="true">...</a>' +
                     '<ul class="dropdown-menu dropdown-menu-left">' +
-                    '<li><button class="btn btn-xs btn-link-default J_beTableAction table-hls" data-index="'+row.id+'" data-hls="closed" title="关闭"><i class="fa fa-heart-o be-icon"></i> 关闭</button></li>' +
                     '<li><button class="btn btn-xs btn-link-default J_beTableAction table-hls" data-index="'+row.id+'"  data-hls="draft" title="未发布"><i class="fa fa-thumbs-o-up be-icon"></i> 未发布</button></li>' +
                     '<li><button class="btn btn-xs btn-link-default J_beTableAction table-hls" data-index="'+row.id+'" data-hls="published" title="发布"><i class="fa fa-thumbs-o-down be-icon"></i> 发布</button></li>' +
                     '</ul>' +
@@ -145,7 +144,6 @@ $(function () {
             },
             statusFormatter: function (value, row, index) {
                 var status = {
-                    'closed': "关闭",
                     'draft': "未发布",
                     'published': "发布"
                 };
@@ -169,6 +167,7 @@ $(function () {
         idField: "id",
         url: "{{ path('admin_vod_data') }}",
         method: "post",
+        sortOrder:'desc',
         contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
         dataType: 'json',
         columns: [{
@@ -194,7 +193,7 @@ $(function () {
             visible: false
         }, {
             field: 'toHls',
-            title: '切片',
+            title: '切流',
             formatter: $.table_util.isToCNFormatter
         }, {
             field: 'status',
@@ -202,7 +201,7 @@ $(function () {
             formatter: $.table_util.statusFormatter
         }, {
             field: 'fileName',
-            title: '媒体类型'
+            title: '文件名称'
         }, {
             field: 'streams',
             title: '输出流'
@@ -215,24 +214,28 @@ $(function () {
         onLoadSuccess: function () {
             $('.J_beTableAction.table-edit').on('click',function(){
                 var index = $(this).data('index');
-                $.mywind('dialog',{
-                    url:"{{ path('admin_vod_edit_show') }}?id="+index,
-                    success:function(){
-
-                    }
-                });
+                $.mywind('dialog',{url:"{{ path('admin_vod_edit_show') }}?id="+index});
             });
             $('.J_beTableAction.table-delete').on('click',function(){
                 var index = $(this).data('index');
                 $.post("{{ path('admin_vod_delete') }}",{id:index},function(res){
-
+                    if(!res.status){
+                        $form.submit();
+                    }else{
+                        $.mywind('alert',{message:res.msg});
+                    }
                 },'json');
             });
             $('.J_beTableAction.table-hls').on('click',function(){
                 var index = $(this).data('index');
                 var hls = $(this).data('hls');
                 $.post("{{ path('admin_vod_hls') }}",{id:index,hls:hls},function(res){
-
+                    if(!res.status){
+                        $form.submit();
+                        $('#' + modal_id).modal('hide').hide();
+                    }else{
+                        $.mywind('alert',{message:res.msg});
+                    }
                 },'json');
             })
         }

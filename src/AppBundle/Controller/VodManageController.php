@@ -47,7 +47,7 @@ class VodManageController extends Controller
             {
                 $post['search'] = array();
             }
-            $data = $ry->searchVod($post['search'],'v.id',$post['order'],$post['offset'],$post['limit']);
+            $data = $ry->searchVod($post['search'],$post['offset'],$post['limit'],'v.id',$post['order']);
 
 
         }catch (\Exception $e){
@@ -117,31 +117,34 @@ class VodManageController extends Controller
             array('Content-Type' => 'application/json')
         );
     }
+
+    /**
+     *
+     * 编辑视频信息
+     *
+     * @return  Response
+     */
     public function editVodAction()
     {
         $data = array('status' => 0, 'msg'=>'成功');
         try{
-
             $request = FilterRequest::createFromGlobals();
             $vod_info = $request->request->get('vod');
-            //------------判断是否存在该文件
-
-            //------------保存该文件
-            $vodObject = new VodList();
-            $vodObject->setTitle($vod_info['title']);
-            $vodObject->setDescription($vod_info['description']);
-            $vodObject->setVideoId($vod_info['fileId']);
-            $vodObject->setClassId($vod_info['classId']);
-            $vodObject->setCreator(UtilTool::getUserId());
+            $obj_vod = $this->getDoctrine()->getRepository('AppBundle:VodList')->find( $vod_info['id']);
+            $obj_vod->setTitle($vod_info['title']);
+            $obj_vod->setDescription($vod_info['description']);
+            $obj_vod->setClassId($vod_info['classId']);
+            if(!empty($vod_info['fileId']))
+            {
+                $obj_vod->setVideoId();
+            }
             $em = $this->getDoctrine()->getManager();
-            // 告诉Doctrine你希望（最终）存储Product对象（还没有语句执行）
-            $em->persist($vodObject);
             $em->flush();
         }catch (\Exception $e){
             $data['msg'] = "操作失败,请联系管理员";
             $data['status'] = 1;
             $logger = $this->get('logger');
-            $logger->error('--addVodAction--'.$e->getMessage());
+            $logger->error('--editVodAction--'.$e->getMessage());
         }
         return new Response(
             json_encode($data),
@@ -149,31 +152,30 @@ class VodManageController extends Controller
             array('Content-Type' => 'application/json')
         );
     }
+
+    /**
+     *
+     * 删除视频信息
+     *
+     * @return Response
+     */
     public function deleteVodAction()
     {
         $data = array('status' => 0, 'msg'=>'成功');
         try{
 
             $request = FilterRequest::createFromGlobals();
-            $vod_info = $request->request->get('vod');
-            //------------判断是否存在该文件
-
-            //------------保存该文件
-            $vodObject = new VodList();
-            $vodObject->setTitle($vod_info['title']);
-            $vodObject->setDescription($vod_info['description']);
-            $vodObject->setVideoId($vod_info['fileId']);
-            $vodObject->setClassId($vod_info['classId']);
-            $vodObject->setCreator(UtilTool::getUserId());
+            $vod_id = $request->request->get('id');
             $em = $this->getDoctrine()->getManager();
-            // 告诉Doctrine你希望（最终）存储Product对象（还没有语句执行）
-            $em->persist($vodObject);
+            $vod_info = $em->getRepository('AppBundle:VodList')->find( $vod_id);
+            $em->remove($vod_info);
             $em->flush();
+
         }catch (\Exception $e){
             $data['msg'] = "操作失败,请联系管理员";
             $data['status'] = 1;
             $logger = $this->get('logger');
-            $logger->error('--addVodAction--'.$e->getMessage());
+            $logger->error('--deleteVodAction--'.$e->getMessage());
         }
 
         return new Response(
@@ -187,21 +189,6 @@ class VodManageController extends Controller
         $data = array('status' => 0, 'msg'=>'成功');
         try{
 
-            $request = FilterRequest::createFromGlobals();
-            $vod_info = $request->request->get('vod');
-            //------------判断是否存在该文件
-
-            //------------保存该文件
-            $vodObject = new VodList();
-            $vodObject->setTitle($vod_info['title']);
-            $vodObject->setDescription($vod_info['description']);
-            $vodObject->setVideoId($vod_info['fileId']);
-            $vodObject->setClassId($vod_info['classId']);
-            $vodObject->setCreator(UtilTool::getUserId());
-            $em = $this->getDoctrine()->getManager();
-            // 告诉Doctrine你希望（最终）存储Product对象（还没有语句执行）
-            $em->persist($vodObject);
-            $em->flush();
         }catch (\Exception $e){
             $data['msg'] = "操作失败,请联系管理员";
             $data['status'] = 1;

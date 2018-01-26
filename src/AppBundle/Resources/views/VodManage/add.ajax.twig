@@ -139,7 +139,8 @@ $(function () {
         // Use Ajax to submit form data
         $.post("{{ path('admin_vod_add') }}", _this.serialize(), function(result) {
             if(!result.status){
-
+                $('#' + modal_id).modal('hide').hide();
+                $('#vod_row form').submit();
             }else{
                 $.mywind('alert',{message:result.msg});
             }

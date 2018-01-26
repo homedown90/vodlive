@@ -26,4 +26,20 @@ class VodClassRepository extends \Doctrine\ORM\EntityRepository
             ->getResult(Query::HYDRATE_ARRAY );
 
     }
+    public function getClassByIds($ids)
+    {
+        $qb =  $this->getEntityManager()->createQueryBuilder();
+        $qb->from('AppBundle:VodClass','c')->select("c.name","c.id")->where($qb->expr()->in('c.id',$ids));
+        $query = $qb->getQuery();
+        $result = $query->getResult(Query::HYDRATE_ARRAY);
+        return $result;
+    }
+    public function getClassIdsByParentId($parentId)
+    {
+        $qb =  $this->getEntityManager()->createQueryBuilder();
+        $qb->from('AppBundle:VodClass','c')->select("c.id")->where('c.parentId = :parentId')->setParameter('parentId',$parentId);
+        $query = $qb->getQuery();
+        $result = $query->getResult(Query::HYDRATE_ARRAY);
+        return $result;
+    }
 }

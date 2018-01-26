@@ -12,7 +12,7 @@ use Symfony\Component\HttpKernel\Log\Logger;
  */
 class VodListRepository extends \Doctrine\ORM\EntityRepository
 {
-    public function searchVod($search=array(),$orderField='v.id',$order='asc',$offset=0,$limit=50)
+    public function searchVod($search=array(),$offset=0,$limit=50,$orderField='v.id',$order='asc')
     {
         try{
             $qb = $this->getEntityManager()->createQueryBuilder();
@@ -64,7 +64,7 @@ class VodListRepository extends \Doctrine\ORM\EntityRepository
             $qb->select($qb->expr()->countDistinct('v.id'));
             $count = $qb->getQuery()->getSingleScalarResult();
 
-            $qb->select(array('v.id','v.title','v.description','v.toHls','v.status','v.streams','v.creator','c.name as className','c.path as path','f.fileName'))->leftJoin('AppBundle:VodMd5File','f','WITH','f.id = v.videoId');
+            $qb->select(array('v.id','v.title','v.description','v.playNum','4 as time','v.toHls','v.status','v.streams','v.creator','c.name as className','c.path as path','f.fileName'))->leftJoin('AppBundle:VodMd5File','f','WITH','f.id = v.videoId');
             $qb->setFirstResult($offset)->setMaxResults($limit);
             $qb->orderBy($orderField,$order);
             $query = $qb->getQuery();
@@ -92,5 +92,59 @@ class VodListRepository extends \Doctrine\ORM\EntityRepository
             throw new \Exception($e->getMessage().'查询出错');
         }
 
+    }
+    public function getVodClassJoinClassByPublish()
+    {
+        try{
+            $qb = $this->getEntityManager()->createQueryBuilder();
+
+            $qb->from('AppBundle:VodList','v')
+                ->select(array('c.id as classId','c.parentId','c.name','c.isLeaf'))
+                ->leftJoin('AppBundle:VodClass','c','WITH','c.id = v.classId')
+                ->groupBy('c.id')
+                ->addGroupBy('c.parentId')
+                ->orderBy('c.id')
+                ->addOrderBy('c.parentId');
+//                ->where('v.status = :status')
+//                ->setParameter('status',"published");
+            $query = $qb->getQuery();
+            $result = $query->getResult(Query::HYDRATE_ARRAY);
+            return $result;
+        }catch (\Exception $e){
+            throw new \Exception('-getVodClassJoinClassByPublish-'.$e->getMessage().'查询出错');
+        }
+    }
+    public function getVodByClassIdAndLimit($id,$limit,$offset=0)
+    {
+        try{
+            $qb = $this->getEntityManager()->createQueryBuilder();
+
+            $qb->from('AppBundle:VodList','v')
+                ->select(array('v.title','4 as time','v.playNum','v.id'))
+                ->orderBy('v.id','desc')
+//                ->where('v.status = :status')
+//                ->setParameter('status',"closed")
+                ->andWhere($qb->expr()->in('v.classId',$id))
+                ->setFirstResult($offset)
+                ->setMaxResults($limit);
+            $query = $qb->getQuery();
+            $result = $query->getResult(Query::HYDRATE_ARRAY);
+            return $result;
+        }catch (\Exception $e){
+            throw new \Exception('-getVodByClassIdAndLimit-'.$e->getMessage().'查询出错');
+        }
+    }
+    public function getVodCountByClassId($id)
+    {
+        try{
+            $qb = $this->getEntityManager()->createQueryBuilder();
+            $qb->from('AppBundle:VodList','v')
+            ->select($qb->expr()->countDistinct('v.id'))
+            ->where($qb->expr()->in('v.classId',$id));
+            $count = $qb->getQuery()->getSingleScalarResult();
+            return $count;
+        }catch (\Exception $e){
+            throw new \Exception('-getVodByClassIdAndLimit-'.$e->getMessage().'查询出错');
+        }
     }
 }

@@ -1,5 +1,6 @@
 <div class="container-fluid">
 <form class="form-horizontal" enctype="multipart/form-data">
+    <input type="hidden" value="{{ vod.id }}" name="vod[id]"/>
     {#-------------添加标题--------------#}
     <div class="row">
         <div class="col-sm-8">
@@ -141,9 +142,10 @@ $(function () {
         var bv = _this.data('formValidation');
 
         // Use Ajax to submit form data
-        $.post("{{ path('admin_vod_add') }}", _this.serialize(), function(result) {
+        $.post("{{ path('admin_vod_edit') }}", _this.serialize(), function(result) {
             if(!result.status){
-
+                $('#' + modal_id).modal('hide').hide();
+                $('#vod_row form').submit();
             }else{
                 $.mywind('alert',{message:result.msg});
             }
@@ -152,12 +154,6 @@ $(function () {
         $(e.target).closest('div.input-group').removeClass('has-success').addClass('has-error');
     }).on('success.field.fv', function(e, data) {
         $(e.target).closest('div.input-group').removeClass('has-error').addClass('has-success');
-    }).on('init.form.fv', function(e, data) {
-        var data = {};
-        data['id'] = "{{ vod.id }}";
-        $.post("{{ path('admin_vod_edit') }}",data,function(){
-
-        },'json');
     });
 
     $.mywind('setOption',{ok:function(){

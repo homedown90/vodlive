@@ -1,0 +1,139 @@
+{% extends "@App/home_base.html.twig" %}
+{% block title %}{{ page.title }}{% endblock %}
+{% block content %}
+<div style="background-color: #f5f5f5;overflow: hidden;padding-bottom: 60px;">
+<div class="container" id="vod_list">
+<div class="row" style="background-color: #fff;margin-top: 30px; padding: 20px 28px 20px;">
+    <form class="form-inline" >
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text" >标题</span>
+            </div>
+            <input type="text" class="form-control" name="search[title]" aria-label="Default" >
+        </div>
+        <div class="input-group mb-3" style="padding-left: 1rem">
+            <div class="input-group-prepend">
+                <span class="input-group-text" >父类</span>
+            </div>
+            <select name="search[parent]" class="form-control" style="width: 20rem">
+
+            </select>
+        </div>
+        <div class="input-group mb-3" style="padding-left: 1rem">
+            <div class="input-group-prepend">
+                <span class="input-group-text" >子类</span>
+            </div>
+            <select name="search[classId]" class="form-control" style="width: 20rem">
+
+            </select>
+        </div>
+        <div class="input-group mb-3" style="padding-left: 1rem"><button type="button" name="search" class="btn btn-outline-secondary" >搜索</button></div>
+        <div class="input-group mb-3" style="padding-left: 1rem"><button type="button" name="reset" class="btn btn-outline-secondary" >重置</button></div>
+    </form>
+</div>
+<div class="row">
+   <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+       <div class="row"  name="vod_cart_list">
+           {% for vod in vodList %}
+               <div class="col-4">
+                   <div class="card card-link" style="margin-top: 15px; margin-bottom: 15px">
+                       <a href="{{ path('home_vod_item') }}?id={{ vod.id }}" class="com-a">
+                           <img class="card-img-top" src="{{ asset('/assets/images/IMG_7717.JPG') }}"
+                                alt="Card image cap">
+                           <div class="card-body">
+                               <h6 class="com-card-h"><span class="com-card-strong">标题：</span>{{ vod.title|slice(0,20) }}</h6>
+                               <h6 class="com-card-h"><span class="com-card-strong">时长：</span>{{ vod.time }}</h6>
+                               <h6 class="com-card-h"><span class="com-card-strong">点播：</span>{{ vod.playNum|default(0) }}次</h6>
+                           </div>
+                       </a>
+                   </div>
+               </div>
+           {% endfor %}
+       </div>
+   </div>
+</div>
+<div class="row">
+    <div class="col" id="page-selection"></div>
+</div>
+</div>
+</div>
+</div>
+{% endblock %}
+{% block javascripts %}
+{{ parent() }}
+
+{% endblock %}
+{% block bodyjavascripts %}
+{{ parent() }}
+
+    <script src="{{ asset('/static-dist/app/js/jquery.bootpag.min.js') }}"></script>
+    <script>
+        //# sourceURL=vod_list.js
+        $(function () {
+            /*--------------初始化表单---------------*/
+            var $container_vod = $('#vod_list');
+            var $form = $('#vod_list form');
+            var default_form_data = {};
+            var current_page = 1;
+            var total_vod = {{ count }};
+            var page_size = {{ pageSize }};
+
+            $.util().formFormatter(default_form_data,$form);
+            //------------异步加载分类下拉框
+            /*$.post("{{ path('admin_class_select') }}",{},function(r){
+                $.each(r,function(i,n){
+                    r[i].disabled = 0;
+                    if(r[i].id == "{{ classId }}")
+                    {
+                        r[i].selected = true;
+                    }
+                });
+                $form.find('[name="search[classId]"]').select2tree({
+                    data:r,
+                    minimumResultsForSearch : Infinity
+                });
+            });*/
+            function refreshCartList(num)
+            {
+                var form_data = $.util().formFormatter({},$form);
+                var data = $.extend({},form_data,{'page':current_page,'pageSize':page_size});
+                $container_vod.find('div[name=vod_cart_list]').load("{{ path('home_vod_cart_page') }}",data,function(){
+
+                });
+            }
+            $form.submit(function(e){
+                e.preventDefault();
+                /*加载list*/
+                refreshCartList();
+
+            });
+            $form.find('[name=search]').on('click',function (e) {
+                e.preventDefault();
+                $form.submit();
+            });
+            $form.find('[name=reset]').on('click',function (e) {
+                e.preventDefault();
+                $.each(default_form_data,function(k,v){
+                    $form.find('[name="'+k+'"]').val(v);
+                    if($form.find('[name="'+k+'"]').prop('tagName') == "SELECT" && k=="search[classId]")
+                    {
+                        $form.find('[name="'+k+'"]').trigger('change');
+                    }
+
+                });
+                current_page = 1;
+                $form.submit();
+            });
+
+            /*--------------添加分页---------------*/
+            $('#page-selection').bootpag({
+                total: Math.ceil( total_vod/page_size)
+            }).on("page", function(event,num){
+                 // some ajax content loading...
+                current_page = num;
+                refreshCartList(num);
+            });
+        });
+
+    </script>
+{% endblock %}
