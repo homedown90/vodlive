@@ -34,10 +34,10 @@ class ClassManageController extends Controller {
             $node['is_leaf'] = !$request->request->get('isParent');
             $node['path'] = '';
             if ($node['parent_id'] == 0) {
-                $node['path'] = "0";
+                $node['path'] = "0,";
             }else{
                 $parent = $this->getDoctrine()->getRepository('AppBundle:VodClass')->find($node['parent_id']);
-                $node['path'] = $parent->getParentId().','.$parent->getId();
+                $node['path'] = $parent->getParentId().','.$parent->getId().',';
             }
             $vodClass = new VodClass();
             $vodClass->setName($node['name']);

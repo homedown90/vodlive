@@ -1,78 +1,125 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-    <script src="{{ asset('static-dist/app/js/jquery-3.3.1.min.js') }}"></script>
-    <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script> -->
-    <link href="{{ asset('static-dist/select2/css/select2.min.css') }}" rel="stylesheet"/>
-    <link href="{{ asset('static-dist/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet"/>
-    <link href="{{ asset('static-dist/bootstrap/css/bootstrap-grid.min.css') }}" rel="stylesheet"/>
-
-    <link href="{{ asset('static-dist/bootstrap/css/bootstrap-reboot.min.css') }}" rel="stylesheet"/>
-
+    <meta charset="UTF-8" />
+    <title>{% block title %}Welcome!{% endblock %}</title>
+    {% block stylesheets %}{% endblock %}
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+    {% block javascripts %}
+        <script  src="{{ asset('static-dist/app/js/jquery-3.3.1.min.js') }}"></script>
+        <link href="{{ asset('static-dist/select2/css/select2.min.css') }}"  rel="stylesheet"/>
+        <link  href="{{ asset('static-dist/bootstrap/css/bootstrap.min.css') }}"  rel="stylesheet"/>
+        <link  href="{{ asset('static-dist/bootstrap/css/bootstrap-grid.min.css') }}"  rel="stylesheet"/>
+        <link  href="{{ asset('static-dist/bootstrap/css/bootstrap-reboot.min.css') }}"  rel="stylesheet"/>
+        {#<link rel="stylesheet" href="{{ asset('static-dist/app/css/common.css') }}"/>#}
 
 
 
+        {#<script src="{{ asset('static-dist/app/js/jquery-3.3.1.min.js') }}"></script>#}
+
+        {#<link href="{{ asset('static-dist/select2/css/select2.min.css') }}" rel="stylesheet"/>#}
+        {#<link href="{{ asset('static-dist/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet"/>#}
+        {#<link href="{{ asset('static-dist/bootstrap/css/bootstrap-grid.min.css') }}" rel="stylesheet"/>#}
+
+        {#<link href="{{ asset('static-dist/bootstrap/css/bootstrap-reboot.min.css') }}" rel="stylesheet"/>#}
+    {% endblock %}
 </head>
 <body>
-<div class="container" id="vod_list">
-    <div class="row" style="background-color: #fff;margin-top: 30px; padding: 20px 28px 20px;">
-        <form class="form-inline" >
-            <div class="input-group mb-3">
-                <div class="input-group-prepend">
-                    <span class="input-group-text" >标题</span>
+<header>
+    {% block nav %}
+    {% endblock %}
+</header>
+<main role="main" class="margin-navbar">
+    {% block banner %} {% endblock %}
+    {% block content %}<div class="container" id="vod_list">
+        <div class="row" style="background-color: #fff;margin-top: 30px; padding: 20px 28px 20px;">
+            <form class="form-inline" >
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" >标题</span>
+                    </div>
+                    <input type="text" class="form-control" name="search[title]" aria-label="Default" >
                 </div>
-                <input type="text" class="form-control" name="search[title]" aria-label="Default" >
-            </div>
-            <div class="input-group mb-3" style="padding-left: 1rem">
-                <div class="input-group-prepend">
-                    <span class="input-group-text" >分类</span>
+                <div class="input-group mb-3" style="padding-left: 1rem">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" >分类</span>
+                    </div>
+                    <select name="search[classId]" class="form-control" id="classID" aria-label="Default">
+                    </select>
                 </div>
-                <select name="search[classId]" class="form-control" id="classID" style="width: 20rem">
-                    <option value="0">全部</option>
-                </select>
-            </div>
-            <div class="input-group mb-3" style="padding-left: 1rem"><button type="button" name="search" class="btn btn-outline-secondary" >搜索</button></div>
-            <div class="input-group mb-3" style="padding-left: 1rem"><button type="button" name="reset" class="btn btn-outline-secondary" >重置</button></div>
-        </form>
-    </div>
-</div>
-<select id="e1">
-    <option value="AL">Alabama</option>
-    <option value="WY">Wyoming</option>
-</select>
-<script src="{{ asset('static-dist/select2/js/select2.js') }}"></script>
-<script src="{{ asset('static-dist/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-<script src="{{ asset('hiui/js/select2tree.js') }}"></script>
-<script>
-    $(document).ready(function() {             $("#classID").select2tree({data:[
-        {
-            id: 0,
-            text: 'enhancement',
-        },
-        {
-            id: 1,
-            text: 'bug',
-            parent:0
-        },
-        {
-            id: 2,
-            text: 'duplicate',
-            parent:0
-        },
-        {
-            id: 3,
-            text: 'invalid'
-        },
-        {
-            id: 4,
-            text: 'wontfix'
-        }
-    ]}); });
-</script>
+                <div class="input-group mb-3" style="padding-left: 1rem"><button type="button" name="search" class="btn btn-outline-secondary" >搜索</button></div>
+                <div class="input-group mb-3" style="padding-left: 1rem"><button type="button" name="reset" class="btn btn-outline-secondary" >重置</button></div>
+            </form>
+        </div>
+    </div> {% endblock %}
+</main>
+<footer>
+    {% block foot %} {% endblock %}
+</footer>
+{% block bodyjavascripts %}
+    <script src="{{ asset('static-dist/select2/js/select2.js') }}"></script>
+    <script src="{{ asset('static-dist/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('hiui/js/select2tree.js') }}"></script>
+    <script>
+        $(document).ready(function() {             $("#classID").select2tree({data:[
+            {
+                id: 1,
+                text: 'enhancement',
+            },
+            {
+                id: 2,
+                text: 'bug',
+                parent:1
+            },
+            {
+                id: 3,
+                text: 'duplicate',
+                parent:1
+            },
+            {
+                id: 4,
+                text: 'invalid'
+            },
+            {
+                id: 5,
+                text: 'wontfix'
+            }
+        ]}); });
+    </script>
+{% endblock %}
+
 </body>
 </html>
+
+{#<!DOCTYPE html>#}
+{#<html lang="en">#}
+{#<head>#}
+    {#<meta charset="UTF-8">#}
+    {#<meta name="viewport" content="width=device-width, initial-scale=1.0">#}
+    {#<meta http-equiv="X-UA-Compatible" content="ie=edge">#}
+    {#<title>Document</title>#}
+    {#<script src="{{ asset('static-dist/app/js/jquery-3.3.1.min.js') }}"></script>#}
+    {#<!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />#}
+    {#<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script> -->#}
+    {#<link href="{{ asset('static-dist/select2/css/select2.min.css') }}" rel="stylesheet"/>#}
+    {#<link href="{{ asset('static-dist/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet"/>#}
+    {#<link href="{{ asset('static-dist/bootstrap/css/bootstrap-grid.min.css') }}" rel="stylesheet"/>#}
+
+    {#<link href="{{ asset('static-dist/bootstrap/css/bootstrap-reboot.min.css') }}" rel="stylesheet"/>#}
+
+
+
+
+{#</head>#}
+{#<body>#}
+
+{#<select id="e1">#}
+    {#<option value="AL">Alabama</option>#}
+    {#<option value="WY">Wyoming</option>#}
+{#</select>#}
+{#<script src="{{ asset('static-dist/select2/js/select2.js') }}"></script>#}
+{#<script src="{{ asset('static-dist/bootstrap/js/bootstrap.bundle.min.js') }}"></script>#}
+{#<script src="{{ asset('hiui/js/select2tree.js') }}"></script>#}
+
+{#</body>#}
+{#</html>#}

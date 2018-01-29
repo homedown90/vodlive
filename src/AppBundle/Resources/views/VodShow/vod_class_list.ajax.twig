@@ -1,4 +1,4 @@
-{% for vod in vod_list %}
+{% for vod in vod_list.rows %}
     <div class="col-4">
         <div class="card card-link" style="margin-top: 15px; margin-bottom: 15px">
             <a href="{{ path('home_vod_item') }}?id={{ vod.id }}" class="com-a">
@@ -12,15 +12,17 @@
             </a>
         </div>
     </div>
+{% endfor %}
     <script>
         $(function(){
             var total_vod = {{ vod_list.total }};
             var page_size = {{ vod_list.pageSize }};
             $('#page-selection').bootpag({
                 total: Math.ceil( total_vod/page_size),
-                page:{{ vod_list.page }}
+                page:{{ vod_list.page }},
+                maxVisible: 10,
+
             })
         });
 
     </script>
-{% endfor %}

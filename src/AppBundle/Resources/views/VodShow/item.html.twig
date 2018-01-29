@@ -1,7 +1,8 @@
 {% extends "@App/home_base.html.twig" %}
 
 {% block title %}{{ page.title }}{% endblock %}
-{% block stylesheets %}
+{% block javascripts %}
+    {{ parent() }}
     <script type="text/javascript" src="{{ asset('/static-dist/app/js/ckplayer/ckplayer.js') }}"></script>
 {% endblock %}
 {% block banner %}
@@ -9,16 +10,17 @@
     <div class="container">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="#">Home</a></li>
-                <li class="breadcrumb-item"><a href="#">Library</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Data</li>
+                <li class="breadcrumb-item"><a href="{{ path('home_vod_list') }}?classId=0">点播</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('home_vod_list') }}?classId={{ class.parentId }}">{{ class.parentName }}</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('home_vod_list') }}?classId={{ class.id }}">{{ class.name }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ vod.title|slice(0,20) }}</li>
             </ol>
         </nav>
         <div style="height: 55px;display: flex;flex-direction: row;justify-content: space-between;align-items: center;">
-            <div style="    font-size: 30px;font-weight: 700;text-shadow: 0 2px 2px rgba(0,0,0,.1);">硬件知识之处理器</div>
+            <div style="    font-size: 30px;font-weight: 700;text-shadow: 0 2px 2px rgba(0,0,0,.1);">{{ vod.title|slice(0,20) }}</div>
             <div style="    text-align: center;width: 172px;">
-                <div style="    height: 29px;line-height: 29px;font-size: 24px;display: flex;flex-direction: row;justify-content: space-around;align-items: center;"><span>6 </span><span></span><span>0</span></div>
-                <div style="    height: 16px;line-height: 16px;margin-top: 10px;font-size: 16px;display: flex;flex-direction: row;justify-content: space-around;align-items: center;" "><span class="text-left">学习人数</span><span class="text-right">课程时长</span></div>
+                <div style="    height: 29px;line-height: 29px;font-size: 24px;display: flex;flex-direction: row;justify-content: space-around;align-items: center;"><span>{{ vod.playNum }} </span><span></span><span>{{ vod.time }}</span></div>
+                <div style="    height: 16px;line-height: 16px;margin-top: 10px;font-size: 16px;display: flex;flex-direction: row;justify-content: space-around;align-items: center;" ><span class="text-left">播放次数</span><span class="text-right">视频时长</span></div>
             </div>
         </div>
 

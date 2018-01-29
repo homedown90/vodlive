@@ -22,20 +22,16 @@
      </nav>
  {% endblock %}
 {% block javascripts %}
-    <link rel="stylesheet" href="{{ asset('/static-dist/bootstrap/css/bootstrap.min.css') }}"/>
-    <link rel="stylesheet" href="{{ asset('/static-dist/bootstrap/css/bootstrap-grid.min.css') }}"/>
-    <link rel="stylesheet" href="{{ asset('/static-dist/bootstrap/css/bootstrap-reboot.min.css') }}"/>
-    <link rel="stylesheet" href="{{ asset('/static-dist/app/css/common.css') }}"/>
-    <link type="text/css" src="{{ asset('/static-dist/select2/css/select2.min.css') }}"/>
+    <link rel="stylesheet" href="{{ asset('static-dist/bootstrap/css/bootstrap.min.css') }}"/>
+    <link rel="stylesheet" href="{{ asset('static-dist/bootstrap/css/bootstrap-grid.min.css') }}"/>
+    <link rel="stylesheet" href="{{ asset('static-dist/bootstrap/css/bootstrap-reboot.min.css') }}"/>
+    <link rel="stylesheet" href="{{ asset('static-dist/app/css/common.css') }}"/>
     <script type="application/javascript" src="{{ asset('/static-dist/app/js/jquery-3.3.1.min.js') }}"></script>
-    <link type="text/css" src="{{ asset('/static-dist/select2/css/select2.min.css') }}"/>
 
 {% endblock %}
 {% block bodyjavascripts %}
 
-    <script type="application/javascript" src="{{ asset('/static-dist/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-    <script type="application/javascript" src="{{ asset('/static-dist/app/js/index.js') }}"></script>
-    <script src="{{ asset('/static-dist/app/js/util.js') }}"></script>
-    <script src="{{ asset('/static-dist/select2/js/select2.js') }}"></script>
-    <script src="{{ asset('/static-dist/app/js/jquery.bootpag.min.js') }}"></script>
+    <script type="application/javascript" src="{{ asset('static-dist/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <script type="application/javascript" src="{{ asset('static-dist/app/js/index.js') }}"></script>
+    <script src="{{ asset('static-dist/app/js/util.js') }}"></script>
 {% endblock %}

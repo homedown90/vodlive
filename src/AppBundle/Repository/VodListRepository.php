@@ -44,9 +44,9 @@ class VodListRepository extends \Doctrine\ORM\EntityRepository
                             $qb->andWhere('v.classId = :classId');
                             $qb->setParameter('classId',$val);
                         }else{
-                            $path = $obj_class->getId().','.$obj_class->getPath();
-                            $qb->andWhere('c.path like :path');
-                            $qb->setParameter('path',$path);
+                            $path = $obj_class->getPath().','.$obj_class->getId();
+                            $qb->andWhere($qb->expr()->like('c.path',':path'));
+                            $qb->setParameter('path',$path.',%');
                         }
                         break;
                     case 'status':

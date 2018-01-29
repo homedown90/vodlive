@@ -27,6 +27,7 @@
         "doctrine/orm": "^2.5",
         "gedmo/doctrine-extensions": "dev-master",
         "incenteev/composer-parameter-handler": "^2.0",
+        "pda/pheanstalk": "^3.1",
         "sensio/distribution-bundle": "^5.0.19",
         "sensio/framework-extra-bundle": "^5.0.0",
         "symfony/filesystem": "3.0",

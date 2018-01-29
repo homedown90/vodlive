@@ -1,5 +1,5 @@
 $(function () {
-    $('nav[id^=VodListTab_] a').on('mousemove', function (e) {
+    $('nav[id^=VodListTab_] a').on('mouseenter', function (e) {
         e.preventDefault();
         $(this).tab('show');
         var tab_id = $(this).attr('href');

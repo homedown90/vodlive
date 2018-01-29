@@ -13,18 +13,10 @@
         </div>
         <div class="input-group mb-3" style="padding-left: 1rem">
             <div class="input-group-prepend">
-                <span class="input-group-text" >父类</span>
+                <span class="input-group-text" >分类</span>
             </div>
-            <select name="search[parent]" class="form-control" style="width: 20rem">
-
-            </select>
-        </div>
-        <div class="input-group mb-3" style="padding-left: 1rem">
-            <div class="input-group-prepend">
-                <span class="input-group-text" >子类</span>
-            </div>
-            <select name="search[classId]" class="form-control" style="width: 20rem">
-
+            <select name="search[classId]" class="form-control" aria-label="Default">
+                <option value="0">全部</option>
             </select>
         </div>
         <div class="input-group mb-3" style="padding-left: 1rem"><button type="button" name="search" class="btn btn-outline-secondary" >搜索</button></div>
@@ -53,7 +45,9 @@
    </div>
 </div>
 <div class="row">
-    <div class="col" id="page-selection"></div>
+    <nav aria-label="Page navigation example" id="page-selection">
+
+    </nav>
 </div>
 </div>
 </div>
@@ -61,12 +55,13 @@
 {% endblock %}
 {% block javascripts %}
 {{ parent() }}
-
+    <link rel="stylesheet" href="{{ asset('static-dist/select2/css/select2.min.css') }}"/>
 {% endblock %}
 {% block bodyjavascripts %}
 {{ parent() }}
-
-    <script src="{{ asset('/static-dist/app/js/jquery.bootpag.min.js') }}"></script>
+    <script src="{{ asset('static-dist/select2/js/select2.js') }}"></script>
+    <script src="{{ asset('hiui/js/select2tree.js') }}"></script>
+    <script src="{{ asset('static-dist/app/js/jquery.bootpag.js') }}"></script>
     <script>
         //# sourceURL=vod_list.js
         $(function () {
@@ -80,7 +75,7 @@
 
             $.util().formFormatter(default_form_data,$form);
             //------------异步加载分类下拉框
-            /*$.post("{{ path('admin_class_select') }}",{},function(r){
+            $.post("{{ path('admin_class_select') }}",{},function(r){
                 $.each(r,function(i,n){
                     r[i].disabled = 0;
                     if(r[i].id == "{{ classId }}")
@@ -92,14 +87,12 @@
                     data:r,
                     minimumResultsForSearch : Infinity
                 });
-            });*/
+            });
             function refreshCartList(num)
             {
                 var form_data = $.util().formFormatter({},$form);
                 var data = $.extend({},form_data,{'page':current_page,'pageSize':page_size});
-                $container_vod.find('div[name=vod_cart_list]').load("{{ path('home_vod_cart_page') }}",data,function(){
-
-                });
+                $container_vod.find('div[name=vod_cart_list]').load("{{ path('home_vod_cart_page') }}",data);
             }
             $form.submit(function(e){
                 e.preventDefault();
@@ -124,10 +117,10 @@
                 current_page = 1;
                 $form.submit();
             });
-
             /*--------------添加分页---------------*/
             $('#page-selection').bootpag({
-                total: Math.ceil( total_vod/page_size)
+                total: Math.ceil( total_vod/page_size),
+                maxVisible:10
             }).on("page", function(event,num){
                  // some ajax content loading...
                 current_page = num;
