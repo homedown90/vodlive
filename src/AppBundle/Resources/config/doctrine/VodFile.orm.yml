@@ -1,0 +1,48 @@
+AppBundle\Entity\VodFile:
+    type: entity
+    table: null
+    repositoryClass: AppBundle\Repository\VodFileRepository
+    id:
+        id:
+            type: integer
+            id: true
+            generator:
+                strategy: AUTO
+    fields:
+        name:
+            type: string
+            length: 255
+        save_name:
+            type: string
+            length: 255
+        type:
+            type: string
+            length: 255
+        size:
+            type: bigint
+        parentId:
+            type: integer
+            column: parent_id
+        sequence:
+            type: smallint
+        jsMd5:
+            type: string
+            length: '64'
+            column: js_md5
+        phpMd5:
+            type: string
+            length: '64'
+            column: php_md5
+        isUpload:
+            type: boolean
+            column: is_upload
+        isMerge:
+            type: boolean
+            column: is_merge
+        isHls:
+            type: boolean
+            column: is_hls
+        streams:
+            type: string
+            length: 255
+    lifecycleCallbacks: {  }

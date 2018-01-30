@@ -82,7 +82,7 @@ $(function () {
             minimumResultsForSearch : Infinity
         });
     });
-    //---------------添加分类校验
+    //---------------添加分类校验------------------------------
     $form.find('[name="vod[classId]"]').change(function(e) {
         $form.formValidation('revalidateField', 'vod[classId]');
     });
@@ -127,16 +127,8 @@ $(function () {
             },
         }
     }).on('success.form.fv', function(e) {
-        // Prevent form submission
         e.preventDefault();
-
-        // Get the form instance
         var _this = $(e.target);
-
-        // Get the FormValidation instance
-        var bv = _this.data('formValidation');
-
-        // Use Ajax to submit form data
         $.post("{{ path('admin_vod_add') }}", _this.serialize(), function(result) {
             if(!result.status){
                 $('#' + modal_id).modal('hide').hide();
@@ -145,18 +137,20 @@ $(function () {
                 $.mywind('alert',{message:result.msg});
             }
         }, 'json');
-    }).on('err.field.fv', function(e, data) {
+    }).on('err.field.fv', function(e, data) {//校验失败样式修改
         $(e.target).closest('div.input-group').removeClass('has-success').addClass('has-error');
-    }).on('success.field.fv', function(e, data) {
+    }).on('success.field.fv', function(e, data) {//校验成功样式修改
         $(e.target).closest('div.input-group').removeClass('has-error').addClass('has-success');
     });
-
+    //----------------设置确定按钮的回调函数--------------------
     $.mywind('setOption',{ok:function(){
         $form.submit();
         return false;
         }
     });
+    //---------------添加加载效果--------------------
     BE.initPlugin('upload', $("#add_dialog_upload"));
+    //-------------------上传文件-----------------------
     var upload_url = "{{ path('admin_vod_upload') }}";
     WebUploader.Uploader.register({
         "add-file":"addFile",
@@ -254,7 +248,7 @@ $(function () {
                 }).then(function(res, textStatus, jqXHR){
                     if(!res.status){
                         deferred.resolve();
-                        refreshResult($.extend({},file_info));
+//                        refreshResult($.extend({},file_info));
                     }else{
                         $.mywind('alert',{message:res.msg});
                         deferred.reject();
@@ -263,7 +257,7 @@ $(function () {
                     deferred.reject();
                 });
             }else{
-                refreshResult($.extend({},copyFile(file_info,file)));
+//                refreshResult($.extend({},copyFile(file_info,file)));
             }
             return deferred.promise();
         }
@@ -349,9 +343,7 @@ $(function () {
         }
 
     });
-    function refreshResult(fileifo){
 
-    }
     function copyFile(file_info,file){
         file_info.id = file.id;
         file_info.ext = file.ext;
