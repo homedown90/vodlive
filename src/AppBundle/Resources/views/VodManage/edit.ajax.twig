@@ -252,7 +252,7 @@ $(function () {
                 //合并请求
                 $.ajax({
                     type: "POST"
-                    , url: "{{ path('admin_vod_chunk_merge') }}"
+                    , url: "{{ path('admin_vod_upload_check') }}"
                     , data: file_info
                     , cache: false
                     , dataType: "json"

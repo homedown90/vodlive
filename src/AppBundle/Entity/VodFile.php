@@ -30,12 +30,12 @@ class VodFile
     /**
      * @var int
      */
-    private $parentId;
+    private $parentId=0;
 
     /**
      * @var int
      */
-    private $sequence;
+    private $sequence=0;
 
     /**
      * @var string
@@ -45,27 +45,27 @@ class VodFile
     /**
      * @var string
      */
-    private $phpMd5;
+    private $phpMd5='';
 
     /**
      * @var bool
      */
-    private $isUpload;
+    private $isUpload=false;
 
     /**
      * @var bool
      */
-    private $isMerge;
+    private $isMerge=false;
 
     /**
      * @var bool
      */
-    private $isHls;
+    private $isHls=false;
 
     /**
      * @var string
      */
-    private $streams;
+    private $streams='';
 
 
     /**
@@ -344,7 +344,7 @@ class VodFile
     /**
      * @var string
      */
-    private $save_name;
+    private $saveName;
 
 
     /**
@@ -356,7 +356,7 @@ class VodFile
      */
     public function setSaveName($saveName)
     {
-        $this->save_name = $saveName;
+        $this->saveName = $saveName;
 
         return $this;
     }
@@ -368,6 +368,6 @@ class VodFile
      */
     public function getSaveName()
     {
-        return $this->save_name;
+        return $this->saveName;
     }
 }

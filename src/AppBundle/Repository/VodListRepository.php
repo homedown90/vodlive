@@ -64,7 +64,7 @@ class VodListRepository extends \Doctrine\ORM\EntityRepository
             $qb->select($qb->expr()->countDistinct('v.id'));
             $count = $qb->getQuery()->getSingleScalarResult();
 
-            $qb->select(array('v.id','v.title','v.description','v.playNum','4 as time','v.toHls','v.status','v.streams','v.creator','c.name as className','c.path as path','f.fileName'))->leftJoin('AppBundle:VodMd5File','f','WITH','f.id = v.videoId');
+            $qb->select(array('v.id','v.title','v.description','v.playNum','4 as time','v.toHls','v.status','v.streams','v.creator','c.name as className','c.path as path','f.saveName'))->leftJoin('AppBundle:VodFile','f','WITH','f.id = v.videoId');
             $qb->setFirstResult($offset)->setMaxResults($limit);
             $qb->orderBy($orderField,$order);
             $query = $qb->getQuery();
@@ -83,7 +83,7 @@ class VodListRepository extends \Doctrine\ORM\EntityRepository
         try{
             $qb = $this->getEntityManager()->createQueryBuilder();
 
-            $qb->from('AppBundle:VodList','v')->select(array('v.id','v.title','v.description','v.toHls','v.status','v.streams','v.creator','v.classId','f.id as fileId','f.fileName'))->leftJoin('AppBundle:VodMd5File','f','WITH','f.id = v.videoId');
+            $qb->from('AppBundle:VodList','v')->select(array('v.id','v.title','v.description','v.toHls','v.status','v.streams','v.creator','v.classId','f.id as fileId','f.name as fileName'))->leftJoin('AppBundle:VodFile','f','WITH','f.id = v.videoId');
             $qb->where('v.id = :id')->setParameter('id',$id);
             $query = $qb->getQuery();
             $result = $query->getSingleResult(Query::HYDRATE_ARRAY);

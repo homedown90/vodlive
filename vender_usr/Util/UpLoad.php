@@ -21,10 +21,12 @@ class UpLoad
     public  static $chunk_file = "chunk";//"";
     private $chunk_url = "";//"";
     public  static $merge_file = 'merge';// "/merge";
+    public  static $file_struct = 'file.xml';// "/file保存的路径";
     private $merge_url = '';// "/merge";
     private $parent_file_name = '';
     private $parent_file_size = "";
     private $parent_file_id = "";
+    private $parent_file_mask;
     private $parent_file_type = "mp4";
 
     private $chunk_tmp_name = "";
@@ -70,25 +72,38 @@ class UpLoad
         $this->path  = $path; // 这里得到的是app目录的绝对路
 
          $this->setChunkUrl($parent_file['upload_path']);
-
-         $this->parent_file_id = $parent_file['id'];
+         $this->setMergUrl($parent_file['upload_path']);
+         $this->parent_file_id = $parent_file['file_id'];
+         $this->parent_file_mask = $parent_file['md5'];
          $this->parent_file_name = $parent_file['name'];
          $this->parent_file_size = $parent_file['size'];
          $this->parent_file_type = $parent_file['ext'];
          $this->parent_upload_path = $parent_file['upload_path'];
+        if($chunk->getError() == 0 && !isset($parent_file['chunks']) && $chunk->getSize()==$parent_file['size'])
+        {
+            $this->chunk_nums = 1;
+            $this->chunk_index = 0;
+        }else{
+            $this->chunk_nums = $parent_file['chunks'];
+            $this->chunk_index = $parent_file['chunk'];
+        }
 
-         $this->chunk_nums = $parent_file['chunks'];
-         $this->chunk_index = $parent_file['chunk'];
          $this->chunk_tmp_name = $chunk->getFilename();//临时文件名称
          $this->chunk_size = $chunk->getSize();
          $this->chunk_tmp_path = $chunk->getPathname();
-
+         $this->chunk_jsmask = $parent_file['chunk_md5'];
          $this->file = $chunk;
+         $this->chunk_phpmask = md5_file($this->file->getPathname());
     }
     public function setChunkUrl($file_name)
     {
         $this->chunk_url = rtrim($this->path,'/').'/'.self::$chunk_file.'/'.$file_name;
         self::checkForCreat($this->chunk_url);
+    }
+    public function setMergUrl($file_name)
+    {
+        $this->merge_url = rtrim($this->path,'/').'/'.self::$merge_file.'/'.$file_name;
+        self::checkForCreat($this->merge_url);
     }
     /**
      * 校验chunk分块是否合法
@@ -265,9 +280,83 @@ class UpLoad
         }
         //--------------移动加载的块到制定文件夹下-----------------
         $this->moveLoadChunk();
+        //-------------保存文件信息到xml中-------------
+        $this->updateFileChunkInfoToXml();
         return true;
     }
-
+    public function updateFileChunkInfoToXml()
+    {
+        if(!file_exists($this->chunk_url."/".self::$file_struct))
+        {
+            $dom = new \DOMDocument('1.0','utf-8');
+            $file = $dom->createElement('file');//创建普通节点：booklist
+            $dom->appendChild($file);//把booklist节点加入到DOM文档中
+            $file_id = $dom->createAttribute('id');
+            $file_id_text = $dom->createTextNode($this->parent_file_id);
+            $file_id->appendChild($file_id_text);
+            $file_name = $dom->createAttribute('name');
+            $file_name_text = $dom->createTextNode($this->parent_file_name);
+            $file_name->appendChild($file_name_text);
+            $file_chunks = $dom->createAttribute('chunks');
+            $file_chunks_text = $dom->createTextNode($this->chunk_nums);
+            $file_chunks->appendChild($file_chunks_text);
+            $file_size = $dom->createAttribute('size');
+            $file_size_text = $dom->createTextNode($this->parent_file_size);
+            $file_size->appendChild($file_size_text);
+            $file_type = $dom->createAttribute('type');
+            $file_type_text = $dom->createTextNode($this->parent_file_type);
+            $file_type->appendChild($file_type_text);
+            $file->appendChild($file_id);
+            $file->appendChild($file_name);
+            $file->appendChild($file_type);
+            $file->appendChild($file_chunks);
+            $file->appendChild($file_size);
+            $file->appendChild($file_type);
+            $chunk = $dom->createElement('chunk');//创建普通节点：booklist
+            $chunk_id = $dom->createAttribute('id');
+            $chunk_id_text = $dom->createTextNode($this->chunk_index);
+            $chunk_id->appendChild($chunk_id_text);
+            $chunk_jsmd5 = $dom->createAttribute('jsMask');
+            $chunk_jsmd5_text = $dom->createTextNode($this->chunk_jsmask);
+            $chunk_jsmd5->appendChild($chunk_jsmd5_text);
+            $chunk_phpmd5 = $dom->createAttribute('phpMask');
+            $chunk_phpmd5_text = $dom->createTextNode($this->chunk_phpmask);
+            $chunk_phpmd5->appendChild($chunk_phpmd5_text);
+            $chunk_size = $dom->createAttribute('size');
+            $chunk_size_text = $dom->createTextNode($this->chunk_size);
+            $chunk_size->appendChild($chunk_size_text);
+            $chunk->appendChild($chunk_id);
+            $chunk->appendChild($chunk_jsmd5);
+            $chunk->appendChild($chunk_phpmd5);
+            $chunk->appendChild($chunk_size);
+            $file->appendChild($chunk);
+            $dom->save($this->chunk_url."/file.xml");
+        }else{
+            $dom = new \DOMDocument();
+            $dom->load($this->chunk_url."/file.xml");
+            $file = $dom->getElementsByTagName('file');
+            $file = $file->item(0);
+            $chunk = $dom->createElement('chunk');//创建普通节点：booklist
+            $chunk_id = $dom->createAttribute('id');
+            $chunk_id_text = $dom->createTextNode($this->chunk_index);
+            $chunk_id->appendChild($chunk_id_text);
+            $chunk_jsmd5 = $dom->createAttribute('jsMask');
+            $chunk_jsmd5_text = $dom->createTextNode($this->chunk_jsmask);
+            $chunk_jsmd5->appendChild($chunk_jsmd5_text);
+            $chunk_phpmd5 = $dom->createAttribute('phpMask');
+            $chunk_phpmd5_text = $dom->createTextNode($this->chunk_phpmask);
+            $chunk_phpmd5->appendChild($chunk_phpmd5_text);
+            $chunk_size = $dom->createAttribute('size');
+            $chunk_size_text = $dom->createTextNode($this->chunk_size);
+            $chunk_size->appendChild($chunk_size_text);
+            $chunk->appendChild($chunk_id);
+            $chunk->appendChild($chunk_jsmd5);
+            $chunk->appendChild($chunk_phpmd5);
+            $chunk->appendChild($chunk_size);
+            $file->appendChild($chunk);
+            $dom->save($this->chunk_url."/file.xml");
+        }
+    }
     public function chunksMerge($uniqueFileName, $chunksTotal, $fileExt){
         $targetDir = $this->path.'/'.$uniqueFileName;
         //检查对应文件夹中的分块文件数量是否和总数保持一致
@@ -319,7 +408,7 @@ class UpLoad
         $time_64 = UtilTool::hex10to64($time);
         $rand_64 = UtilTool::random(3);
         $file_name = $user_64.$time_64.$rand_64;*/
-       $upload_path = date('YmdHis').'_'.md5(uniqid());
+       $upload_path = date('Ymd').'_'.md5(uniqid());
         return $upload_path;
     }
     public static function checkForCreat($file_path)
@@ -335,5 +424,37 @@ class UpLoad
         {
             throw new Exception("文件不可写");
         }
+    }
+    public static function checkUploadFinished($path,$file_info)
+    {
+        $file_path = $path.'/'.self::$chunk_file.'/'.$file_info->getSaveName();
+        if(file_exists($file_path))
+        {
+            if(file_exists($file_path.'/'.self::$file_struct))
+            {
+                $dom = new \DOMDocument();
+                $dom->load($file_path.'/'.self::$file_struct);
+                $files = $dom->getElementsByTagName('file');
+                $file = $files->item(0);
+                $chunks = $file->getElementsByTagName('chunk');
+                $total_size = intval($file->getAttribute('size'));
+                $total_chunks =intval($file->getAttribute('chunks'));
+                $chunks_statistic = array();
+                foreach ($chunks as $k => $v)
+                {
+                    $chunks_statistic["{$v->getAttribute('id')}"] =  $file->getAttribute('size');
+                    $total_size = $total_size - intval($file->getAttribute('size'));
+                    $total_chunks--;
+                }
+                if(count($chunks_statistic) != $total_chunks || $total_size !== 0 || $total_chunks !==0)
+                {
+                    return false;
+                }else{
+                    //修改数据库上传完成
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

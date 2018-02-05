@@ -2,14 +2,18 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\VodFile;
 use AppBundle\Entity\VodList;
-use AppBundle\Entity\VodMd5File;
 use Extend\Symfony\FilterRequest;
 use Extend\Util\UpLoad;
 use Extend\Util\UtilTool;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Kernel;
 
 class VodManageController extends Controller
 {
@@ -20,6 +24,16 @@ class VodManageController extends Controller
      */
     public function showAction()
     {
+        $kernel = $this->get('kernel');
+        $cmd = new Application($kernel);
+        $input = new ArrayInput(array(
+            'command' => 'vod:watcher',
+            'tube_name' => 'task.check_upload',
+            'task_count' => 2,
+        ));
+        $output = new NullOutput();
+        $cmd->run($input, $output);
+
         return $this->render('@App/VodManage/show.ajax.twig', array(
             'table'=>array(
                 'outer_div'=>'vod'
@@ -136,7 +150,7 @@ class VodManageController extends Controller
             $obj_vod->setClassId($vod_info['classId']);
             if(!empty($vod_info['fileId']))
             {
-                $obj_vod->setVideoId();
+                $obj_vod->setVideoId($vod_info['fileId']);
             }
             $em = $this->getDoctrine()->getManager();
             $em->flush();
@@ -259,13 +273,10 @@ class VodManageController extends Controller
         try{
             $logger = $this->get('logger');
             $response = new Response();
-            //关闭缓存
             $request = FilterRequest::createFromGlobals();
             $post = $request->request->all();
-            $files = $request->files->all();
             $upload_url = $this->getParameter('brochures_directory'); // 这里得到的是app目录的绝对路
-            $logger->error('--upLoadAction--post  --'.print_r($post,true));
-            $logger->error('--upLoadAction--file  --'.print_r($files,true));
+
             if (file_exists(rtrim($upload_url,'/')."/chunk/{$post['upload_path']}/{$post['chunk_index']}") ) {
                 $data['is_exist'] = 1;
                 $data['msg'] = 'chunk已存在';
@@ -282,18 +293,28 @@ class VodManageController extends Controller
         return $response;
     }
 
-    function chunksMergeAction()
+    public function uploadFinishedCheckAction()
     {
         $data = array('status' => 0, 'msg'=>'成功');
         try{
             $response = new Response();
             //关闭缓存
-
             $request = FilterRequest::createFromGlobals();
             $post = $request->request->all();
             $files = $request->files->all();
 //            $upload_url = $this->get('kernel')->getProjectDir()."/web/upload"; // 这里得到的是app目录的绝对路
             $upload_url = $this->getParameter('brochures_directory'); // 这里得到的是app目录的绝对路
+            $file_rsy = $this->getDoctrine()->getRepository("AppBundle:VodFile");
+            $obj_file = $file_rsy->findOneById($post['file_id']);
+
+            if(UpLoad::checkUploadFinished($upload_url,$obj_file))
+            {
+                $obj_file->setIsUpload(true);
+                $em = $this->getDoctrine()->getManager();
+                $em->flush();
+            }else{
+                throw new \Exception("上传信息不完整,请重新上传");
+            }
         }catch (\Exception $e){
             $data['msg'] = "操作失败,请联系管理员";
             $data['status'] = 1;
@@ -322,34 +343,36 @@ class VodManageController extends Controller
             $upload_url = $this->getParameter('brochures_directory'); // 这里得到的是app目录的绝对路
             $request = FilterRequest::createFromGlobals();
             $post = $request->request->all();
-            $repository =  $this->getDoctrine()->getRepository('AppBundle:VodMd5File');
+            $repository =  $this->getDoctrine()->getRepository('AppBundle:VodFile');
             $md5_file = $repository->findByJsMd5($post['md5']);
             if(!empty($md5_file)){
-                $file_name = $md5_file[0]->getFileName();
+                $file_name = $md5_file[0]->getSaveName();
                 $file_url = rtrim($upload_url,"/").'/'.Upload::$chunk_file.'/'.$file_name;
                 UpLoad::checkForCreat($file_url);
-                if($md5_file[0]->getFinishMerge() == false)
+                if($md5_file[0]->getIsUpload() == false)
                 {
                     $data['is_finish'] = 0;
                 }else{
                     $data['is_finish'] = 1;
                 }
-                $data['upload_path'] = $md5_file[0]->getServerMd5();
+                $data['upload_path'] = $md5_file[0]->getSaveName();
                 $data['file_id'] = $md5_file[0]->getId();
             }else{
                 $file_name = UpLoad::createRandFileName();
                 $file_url = rtrim($upload_url,"/").'/'.Upload::$chunk_file.'/'.$file_name;
                 UpLoad::checkForCreat($file_url);
-                $file_map = new VodMd5File();
+                $file_map = new VodFile();
                 $file_map->setJsMd5($post['md5']);
-                $file_map->setFileName($file_name);
-                $file_map->setServerMd5();
+                $file_map->setSaveName($file_name);
+                $file_map->setSize($post['size']);
+                $file_map->setType($post['ext']);
+                $file_map->setName($post['name']);
                 $em = $this->getDoctrine()->getManager();
                 $em->persist($file_map);
                 $em->flush();
                 $data['is_finish'] = 0;
                 $data['file_id'] = $file_map->getId();
-                $data['upload_path'] = $file_map->getServerMd5();
+                $data['upload_path'] = $file_map->getSaveName();
             }
 
         }catch (\Exception $e){

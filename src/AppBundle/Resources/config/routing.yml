@@ -62,9 +62,9 @@ admin_vod_file_check:
 admin_vod_chunk_check:
     path: /vod/chunk/check
     defaults: { _controller: AppBundle:VodManage:chunkCheck }
-admin_vod_chunk_merge:
-    path: /vod/chunk/merge
-    defaults: { _controller: AppBundle:VodManage:chunksMerge }
+admin_vod_upload_check:
+    path: /vod/chunk/upload/check
+    defaults: { _controller: AppBundle:VodManage:uploadFinishedCheck }
 
 #-----------------------------分类管理-------------------------------
 admin_class_show:

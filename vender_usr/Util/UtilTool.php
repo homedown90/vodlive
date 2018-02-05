@@ -166,6 +166,22 @@ class UtilTool {
     {
         return 1;
     }
+    static public function json_decode_safe($str, $assoc = false)
+    {
+        $o = json_decode($str, $assoc, 512, JSON_BIGINT_AS_STRING);
+        if (!$o && !empty($str)) {
+            $str = valid_utf8($str);
+            $o   = json_decode($str, $assoc, 512, JSON_BIGINT_AS_STRING);
+            if (!$o) {
+                $str = str_replace(array("\r", "\n", "\t"), '', $str);
+                $o   = json_decode($str, $assoc, 512, JSON_BIGINT_AS_STRING);
+                if (!$o) {
+                    $str = str_replace("\\", "\\\\", $str);
+                    $o   = json_decode($str, $assoc, 512, JSON_BIGINT_AS_STRING);
+                }
+            }
+        }
+    }
 }
 
 ?>

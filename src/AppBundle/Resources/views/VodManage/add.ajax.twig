@@ -72,6 +72,7 @@ $(function () {
     var chunk_size = 5*1024*1024;
     var file_size = 5*1024 * 1024 * 1024;
     var file_info = {};
+    var chunks_info = {};
     //------------异步加载分类下拉框
     $.post("{{ path('admin_class_select') }}",{},function(r){
         $.each(r,function(i,n){
@@ -192,7 +193,7 @@ $(function () {
                         }else{
                             deferred.resolve();                            //拿到上传文件的唯一名称，用于断点续传
                         }
-                        uploader.option('formData',{md5:file_info.md5,ext:file_info.ext,upload_path:file_info.upload_path});
+                        uploader.option('formData',{md5:file_info.md5,file_id:file_info.file_id,ext:file_info.ext,upload_path:file_info.upload_path});
                     }else{//校验异常，终止上传，并提示信息
                         deferred.reject();
                         $.mywind('alert',{message:'上传失败,联系管理员或先保存视频，随后再次上传'});
@@ -207,41 +208,48 @@ $(function () {
         , beforeSend: function(block){
             //分片验证是否已传过，用于断点续传
             var deferred = new $.Deferred();
-            $.ajax({
-                type: "POST"
-                ,url: "{{ path('admin_vod_chunk_check') }}"
-                ,data: {
-                     upload_path: file_info.upload_path
-                    , chunk_index: block.chunk
-                    , size: block.end - block.start
+            (new WebUploader.Uploader()).md5File(block.file,block.start, block.end).progress(function(percentage){
+            }).then(function(val){
+                if(!chunks_info[block.chunk])
+                {
+                    chunks_info[block.chunk] = {};
                 }
-                , cache: false
-                , timeout: 1000 //todo 超时的话，只能认为该分片未上传过
-                , dataType: "json"
-            }).then(function(res, textStatus, jqXHR){
-                if(!res.status){
-                    if(res.is_exist){   //若存在，返回失败给WebUploader，表明该分块不需要上传
-                        deferred.reject();
+                chunks_info[block.chunk].md5 =  val;
+                $.ajax({
+                    type: "POST"
+                    ,url: "{{ path('admin_vod_chunk_check') }}"
+                    ,data: {
+                        upload_path: file_info.upload_path
+                        , chunk_index: block.chunk
+                        , size: block.end - block.start
+                        , chunk_md5: val
+                    }
+                    , cache: false
+                    , timeout: 1000 //todo 超时的话，只能认为该分片未上传过
+                    , dataType: "json"
+                }).then(function(res, textStatus, jqXHR){
+                    if(!res.status && res.is_exist){  //若存在，返回失败给WebUploader，表明该分块不需要上传
+                            deferred.reject();
                     }else{
+                        uploader.option('formData',{md5:file_info.md5,file_id:file_info.file_id,ext:file_info.ext,upload_path:file_info.upload_path,chunk_md5:chunks_info[block.chunk].md5});
                         deferred.resolve();
                     }
-                }else{
-                    deferred.resolve();
-                }
 
-            }, function(jqXHR, textStatus, errorThrown){    //任何形式的验证失败，都触发重新上传
-                deferred.resolve();
+                }, function(jqXHR, textStatus, errorThrown){    //任何形式的验证失败，都触发重新上传
+                    deferred.resolve();
+                });
             });
+
             return deferred.promise();
         }
         , afterSendFile: function(file){
             file_info.chunk_total = 0;
             var deferred = new $.Deferred();
-            if((file_info.chunk_total = Math.ceil(file.size/chunk_size)) > 1){
+            if((file_info.chunk_total = Math.ceil(file.size/chunk_size)) >= 1){
                 //合并请求
                 $.ajax({
                     type: "POST"
-                    , url: "{{ path('admin_vod_chunk_merge') }}"
+                    , url: "{{ path('admin_vod_upload_check') }}"
                     , data: file_info
                     , cache: false
                     , dataType: "json"
