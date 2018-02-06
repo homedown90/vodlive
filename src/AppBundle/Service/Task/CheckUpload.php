@@ -9,24 +9,24 @@ namespace AppBundle\Service\Task;
 
 
 use AppBundle\Command\VodWorkerCommand;
+use Extend\Util\UpLoad;
 
 class CheckUpload
 {
     private $server_container;
-    public function __construct($container)
+    private $msg = "checkUpload--";
+    public function __construct($container,$logger)
     {
         $this->server_container = $container;
+        $this->logger           = $logger;
     }
-
-    private $msg = "checkUpload--";
     public function main($worker)
     {
-        $file_rsy = $this->server_container->get('doctrine')->getRepository('AppBundle:VodFile');
-        $logger =$this->server_container->get('logger');
-        $file_list = $file_rsy->findByIsUpload(true);
+        $file_rsy  = $this->server_container->get('doctrine')->getRepository('AppBundle:VodFile');
+        $file_list = $file_rsy->findByIsUpload(false);
         if(empty($file_rsy))
         {
-            $logger->error("{$this->msg}.不存在未上传的完成的视频");
+            $this->logger->error("{$this->msg}.不存在未上传的完成的视频");
             return false;
         }
         $has_task = false;
@@ -41,19 +41,19 @@ class CheckUpload
     }
 
     //自动调用的时候应该首先调用该方法,注册类内部的方法
-    static function register($worker) {
-        $worker->registerHandle('check_upload', array('task.check_upload','checkUpload'));
-    }
-    public function checkUpload($id)
+    static function register($worker)
     {
-        $upload_url = $this->server_container->getParameter('brochures_directory'); // 这里得到的是app目录的绝对路
-        $file_rsy = $this->server_container->get('doctrine')->getRepository("AppBundle:VodFile");
-        $obj_file = $file_rsy->findOneById($id);
-
+        $worker->registerHandle('check_upload', array('task.check_upload','checkUploadFinished'));
+    }
+    public function checkUploadFinished($id)
+    {
+        $upload_url = $this->server_container->getParameter('brochures_directory');                 //获取项目根目录
+        $file_rsy   = $this->server_container->get('doctrine')->getRepository("AppBundle:VodFile");//获取VodFile对象
+        $obj_file   = $file_rsy->findOneById($id);                                                       //查找未上传成功的视频文件信息
         if(UpLoad::checkUploadFinished($upload_url,$obj_file))
         {
             $obj_file->setIsUpload(true);
-            $em = $this->$this->server_container->get('doctrine')->getManager();
+            $em = $this->server_container->get('doctrine')->getManager();
             $em->flush();
             return VodWorkerCommand::TASK_OK;
         }else{

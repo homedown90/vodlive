@@ -53,9 +53,11 @@ class VodWorkerCommand extends ContainerAwareCommand
 
         return $pheanstalk;
     }
+
     public function registerHandle($handle, $fp) {
         $this->handle_map[ $handle ] = $fp;
     }
+
     public function pushTask($handle, $data, $delay = 0, $pri = 1024, $ttr = 600, $validity = 0) {
         if ($validity)
             $msg = json_encode(array('handle' => $handle, 'data' => $data, 'validity' => time() + $validity));
@@ -78,7 +80,7 @@ class VodWorkerCommand extends ContainerAwareCommand
         return FALSE;
     }
     public function resetAlarm($secs = 120) {
-        $disable_alarm = $this->getContainer()->get('disable_alarm');
+        $disable_alarm = $this->getContainer()->getParameter('disable_alarm');
         if ($disable_alarm)
         {
             return;
@@ -109,19 +111,17 @@ class VodWorkerCommand extends ContainerAwareCommand
         //----------注册handler,注册每个服务中的handler用来处理相关的业务
         $tube_manager::register($this);
         //----------添加并发任务
-        if ($this->task_count > 1) {
-            $task_count = $this->task_count - 1;
-            //---------激活之前被挂起的任务
-            $kicked = $this->pheanstalk->kick(1000000);
-            /*添加推送任务*/
-            $this->resetAlarm();
-            $has_task = $tube_manager->main($this);
-            $this->resetAlarm();
-            if ($kicked > 0 || $has_task) {
-                for ($i = 0; $i < $task_count; $i++) {
-                    $cmd =  "php " .$web_root. "/bin/console vod:worker {$this->tube_name} {$this->task_id}";
-                    exec("$cmd >/dev/null &");
-                }
+        $task_count = $this->task_count - 1;
+        //---------激活之前被挂起的任务
+        $kicked = $this->pheanstalk->kick(1000000);
+        /*添加推送任务*/
+        $this->resetAlarm();
+        $has_task = $tube_manager->main($this);
+        $this->resetAlarm();
+        if ($kicked > 0 || $has_task) {
+            for ($i = 0; $i < $task_count; $i++) {
+                $cmd =  "php " .$web_root. "/bin/console vod:worker {$this->tube_name} {$this->task_id}";
+                exec("$cmd >/dev/null &");
             }
         }
         //-----------统计当前任务处理的量
@@ -162,8 +162,9 @@ class VodWorkerCommand extends ContainerAwareCommand
             //-------------------------判断任务类型,回调任务处理逻辑
             if (isset($obj->handle) && isset($this->handle_map[$obj->handle])) {
                 ++$task_statistic;
-                $tube_manager = $this->getContainer()->get($this->handle_map[$obj->handle][0]);
-                $result       = call_user_func(array($tube_manager, $this->handle_map[$obj->handle][1]), $obj->data);
+                $tube_service = $this->getContainer()->get($this->handle_map[$obj->handle][0]);
+                $tube_handler = $this->handle_map[$obj->handle][1];
+                $result       = $tube_service->$tube_handler($obj->data);
                 //判断cur_job是否过了执行时间?
                 if (!$this->cur_job)
                     continue;
@@ -171,7 +172,7 @@ class VodWorkerCommand extends ContainerAwareCommand
                 if ($result > 0) {
                     try {
                         switch ($result) {
-                            case slef::TASK_SUSPEND: {
+                            case self::TASK_SUSPEND: {
                                 $this->pheanstalk->bury($this->cur_job);
                                 break;
                             }

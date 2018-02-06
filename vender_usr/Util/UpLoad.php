@@ -393,6 +393,12 @@ class UpLoad
             throw new Exception("文件不可写");
         }
     }
+    /*
+     * 校验视频是否上传完成
+     *
+     * @param string path 上传文件目录
+     * @param ORM file_info vodfile对象
+     * */
     public static function checkUploadFinished($path,$file_info)
     {
         $file_path = $path.'/'.self::$chunk_file.'/'.$file_info->getSaveName();
@@ -425,51 +431,67 @@ class UpLoad
         }
         return false;
     }
+    /*
+     * 视频切流
+     *
+     * @param string path 视频上传路径
+     * @param ORM path vodfil对象
+     * @param string sh_path shell脚本路径
+     * @param string log_path 日志路径
+     * */
     public static function hlsVod($path,$file_info,$sh_path,$log_path)
     {
-        $hls_path = $path.'/'.self::$hls_vod.'/'.$file_info->getSaveName();
-        $file_name = $hls_path.'/'.$file_info->getName();
-        $merge_path = $path.'/'.self::$merge_file.'/'.$file_info->getSaveName().'/'.$file_info->getName();
+        $hls_path   = $path . '/' . self::$hls_file . '/' . $file_info->getSaveName();                                   //切流视频路径
+        $file_name  = explode('_', $file_info->getSaveName());
+        $file_path  = $hls_path . '/' . $file_name[1];                                                          //存放文件
+        $merge_path = $path . '/' . self::$merge_file . '/' . $file_info->getSaveName() . '/' . $file_info->getName();
 
-        if(file_exists($hls_path))
+        if(!file_exists($hls_path))
         {
-            exec("{$sh_path}/mp4.sh {$merge_path} $file_name $log_path",$output,$result);
-            if($result == 0)
-            {
-                return true;
-            }else{
-                return false;
-            }
+            self::checkForCreat($hls_path);
+        }
+        exec("{$sh_path}/mp4.sh {$merge_path} {$file_path} {$log_path}/{$file_name[1]}.log",$output,$result);
+        if($result == 0)
+        {
+            return true;
+        }else{
+            return false;
         }
         return false;
     }
+    /*
+     * chunk分块的合并
+     * */
     public static function chunksMerge($path,$file_info){
-        $chunk_path = $path.'/'.self::$chunk_file.'/'.$file_info->getSaveName();
-        $merge_path = $path.'/'.self::$merge_file.'/'.$file_info->getSaveName();
+        $chunk_path = $path.'/'.self::$chunk_file.'/'.$file_info->getSaveName();//分块目录
+        $merge_path = $path.'/'.self::$merge_file.'/'.$file_info->getSaveName();//合并目录
         if(file_exists($chunk_path))
-        {
+        {//if 1
             if(file_exists($chunk_path.'/'.self::$file_struct))
-            {
+            {//if 2
+                //---------获取file信息
                 $dom = new \DOMDocument();
-                $dom->load($chunk_path.'/'.self::$file_struct);
-                $files = $dom->getElementsByTagName('file');
-                $file = $files->item(0);
-                $chunks = $file->getElementsByTagName('chunk');
-                $file_name = $file->getElementsByTagName('name');
-                $total_size = intval($file->getAttribute('size'));
-                $total_chunks = $statistic_chunks =intval($file->getAttribute('chunks'));
+                $dom->load($chunk_path . '/' . self::$file_struct);
+                $files            = $dom->getElementsByTagName('file');
+                $file             = $files->item(0);
+                $file_name        = $file->getAttribute('name');                    //获取file原名
+                $total_size       = intval($file->getAttribute('size'));                    //获取文件大小
+                $statistic_chunks = intval($file->getAttribute('chunks'));//获取chunk总的数量,一方面总数量是否匹配,另一方面统计
+
+                //----------获取chunk信息
+                $chunks           = $file->getElementsByTagName('chunk');                   //获取chunk列表
                 $chunks_statistic = array();
                 foreach ($chunks as $k => $v)
                 {
                     $chunks_statistic["{$v->getAttribute('id')}"] =  $v->getAttribute('size');
                     $total_size = $total_size - intval($v->getAttribute('size'));
-                    $statistic_chunks--;
                 }
-                if(count($chunks_statistic) != $total_chunks || $total_size !== 0 || $statistic_chunks !==0)
-                {
+                //----------判断chunk列表信息是否正确
+                if(count($chunks_statistic) != $statistic_chunks || $total_size !== 0)
+                {//if 3
                     return false;
                 }else{
-                    $lock_fd = fopen($chunk_path . '/' . substr($file_name, 0, strpos($file_name, '.') - 1) . '.lock', "w");
+                    $lock_fd = fopen($chunk_path . '/' . substr($file_name, 0, strpos($file_name, '.')-1) . '.lock', "w");
                     if (!flock($lock_fd, LOCK_EX | LOCK_NB)) {
                         fclose($lock_fd);
                         return false;
@@ -477,28 +499,28 @@ class UpLoad
 
                     //进行合并
                     $file = fopen($merge_path . '/' .$file_name, 'wb');
-                    for ($index = 0; $index < $total_chunks; $index++) {
-                        $chunk_file   = $chunk_path . '/' . $index;
-                        $chunkFile = fopen($chunk_file, 'rb');
-                        $content   = fread($chunkFile, filesize($chunk_file));
+                    for ($index = 0; $index < $statistic_chunks; $index++) {
+                        $chunk_file = $chunk_path . '/' . $index;
+                        $chunkFile  = fopen($chunk_file, 'rb');
+                        $content    = fread($chunkFile, filesize($chunk_file));
                         fclose($chunkFile);
                         fwrite($file, $content);
 
                         //删除chunk文件
-                        unlink($chunk_file);
+//                        unlink($chunk_file);
                     }
                     fclose($file);
                     //删除chunk文件夹
-                    rmdir($chunk_path);
+//                    rmdir($chunk_path);
                     //解锁
                     flock($lock_fd, LOCK_UN);
                     fclose($lock_fd);
                     unlink($chunk_path . '/' . substr($file_name, 0, strpos($file_name, '.') - 1) . '.lock');
 
                     return true;
-                }
-            }
-        }
+                }//end if 3
+            }//end if 2
+        }//end if 1
 
         return false;
     }

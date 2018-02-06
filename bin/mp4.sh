@@ -5,10 +5,7 @@ temp_m3u8_name=$2
 log_path=$3
 m3u8_name=${temp_m3u8_name##*/}
 m3u8_path=${temp_m3u8_name%/*}
-
-file_name=null
-last_name=null
-
+echo ${video_path}
 video_m3u8_log=${log_path}
 
 # init input_file and out_putfile
@@ -39,7 +36,7 @@ video_to_m3u8(){
     fi
 }
 
-if [[ -f ${video_path} && ! -d ${video_path} && -n ${ts_name}  ]]
+if [[ -f ${video_path} && ! -d ${video_path} && -n ${m3u8_name}  ]]
 then
   prepare
   checkfile_exist ${output_file%/*}

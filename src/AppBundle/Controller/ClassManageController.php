@@ -79,7 +79,6 @@ class ClassManageController extends Controller {
         try{
             $repository = $this->getDoctrine()->getRepository('AppBundle:VodClass');
             $class_list = $repository->findAllOrderByIdAsc();
-            $logger->error('--getDataAction-234234234-'.print_r($class_list[0]->getId(),true));
             $tree = $this->array2tree($class_list);
             $data = array_merge($data,array('data'=>$tree));
         }catch (\Exception $e){

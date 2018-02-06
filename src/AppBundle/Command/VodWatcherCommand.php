@@ -82,16 +82,15 @@ class VodWatcherCommand extends ContainerAwareCommand
                     $msg = array('handle'=>'', 'data'=>array('consumer'=>$current_watching, 'inc'=>0, 'tube'=>$this->tube_name, 'before'=>($step==0?true:false), 'task_id'=>$this->task_id));
                     $pheanstalk->put(json_encode($msg), 4096);
                     $step++;
-                }
-                /*
-                 * 这个应该判断的是只有watcher命令正在工作的时候,这个时候就需要关闭该watcher,说明已经没有需要处理的任务了
-                 *
-                 * current-using:->useTube()功能函数,这个时候监控的所有正在使用该链接的任务数量,如果为1,则只有watcher正在处理工作
-                 * current-watching: 指的是 $pheanstalk->watch($this->tube_name);的链接数量
-                 * current-waiting:指的是那些正在等待处理的链接数$pheanstalk->reserve();使用此tube打开连接并且等待响应的连接数
-                 */
-                else if($result->offsetGet('current-using')==1 && $result->offsetGet('current-watching')==0 && $result->offsetGet('current-waiting')==0)
+                }else if($result->offsetGet('current-using')==1 && $result->offsetGet('current-watching')==0 && $result->offsetGet('current-waiting')==0)
                 {
+                    /*
+                     * 这个应该判断的是只有watcher命令正在工作的时候,这个时候就需要关闭该watcher,说明已经没有需要处理的任务了
+                     *
+                     * current-using:->useTube()功能函数,这个时候监控的所有正在使用该链接的任务数量,如果为1,则只有watcher正在处理工作
+                     * current-watching: 指的是 $pheanstalk->watch($this->tube_name);的链接数量
+                     * current-waiting:指的是那些正在等待处理的链接数$pheanstalk->reserve();使用此tube打开连接并且等待响应的连接数
+                     */
                     if($step == 2 || time() - $start_time > 5)
                     {
                         if($total_jobs > 0)
