@@ -24,16 +24,6 @@ class VodManageController extends Controller
      */
     public function showAction()
     {
-        $kernel = $this->get('kernel');
-        $cmd = new Application($kernel);
-        $input = new ArrayInput(array(
-            'command' => 'vod:watcher',
-            'tube_name' => 'task.check_upload',
-            'task_count' => 2,
-        ));
-        $output = new NullOutput();
-        $cmd->run($input, $output);
-
         return $this->render('@App/VodManage/show.ajax.twig', array(
             'table'=>array(
                 'outer_div'=>'vod'

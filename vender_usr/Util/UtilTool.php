@@ -181,6 +181,7 @@ class UtilTool {
                 }
             }
         }
+        return $o;
     }
 }
 

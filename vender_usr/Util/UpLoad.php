@@ -11,6 +11,7 @@
 namespace Extend\Util;
 
 
+use AppBundle\Command\VodWorkerCommand;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -21,6 +22,7 @@ class UpLoad
     public  static $chunk_file = "chunk";//"";
     private $chunk_url = "";//"";
     public  static $merge_file = 'merge';// "/merge";
+    public  static $hls_file = 'm3u8';// "/merge";
     public  static $file_struct = 'file.xml';// "/file保存的路径";
     private $merge_url = '';// "/merge";
     private $parent_file_name = '';
@@ -73,6 +75,7 @@ class UpLoad
 
          $this->setChunkUrl($parent_file['upload_path']);
          $this->setMergUrl($parent_file['upload_path']);
+         $this->setHlsUrl($parent_file['upload_path']);
          $this->parent_file_id = $parent_file['file_id'];
          $this->parent_file_mask = $parent_file['md5'];
          $this->parent_file_name = $parent_file['name'];
@@ -104,6 +107,11 @@ class UpLoad
     {
         $this->merge_url = rtrim($this->path,'/').'/'.self::$merge_file.'/'.$file_name;
         self::checkForCreat($this->merge_url);
+    }
+    public function setHlsUrl($file_name)
+    {
+        $this->hls_url = rtrim($this->path,'/').'/'.self::$hls_file.'/'.$file_name;
+        self::checkForCreat($this->hls_url);
     }
     /**
      * 校验chunk分块是否合法
@@ -357,46 +365,6 @@ class UpLoad
             $dom->save($this->chunk_url."/file.xml");
         }
     }
-    public function chunksMerge($uniqueFileName, $chunksTotal, $fileExt){
-        $targetDir = $this->path.'/'.$uniqueFileName;
-        //检查对应文件夹中的分块文件数量是否和总数保持一致
-        if($chunksTotal > 1 && (count(scandir($targetDir)) - 2) == $chunksTotal){
-            //同步锁机制
-            $lockFd = fopen($this->path.'/'.$uniqueFileName.'.lock', "w");
-            if(!flock($lockFd, LOCK_EX | LOCK_NB)){
-                fclose($lockFd);
-                return false;
-            }
-
-            //进行合并
-            $this->fileType = $fileExt;
-            $finalName = $this->path.'/'.($this->setOption('newFileName', $this->proRandName()));
-            $file = fopen($finalName, 'wb');
-            for($index = 0; $index < $chunksTotal; $index++){
-                $tmpFile = $targetDir.'/'.$index;
-                $chunkFile = fopen($tmpFile, 'rb');
-                $content = fread($chunkFile, filesize($tmpFile));
-                fclose($chunkFile);
-                fwrite($file, $content);
-
-                //删除chunk文件
-                unlink($tmpFile);
-            }
-            fclose($file);
-            //删除chunk文件夹
-            rmdir($targetDir);
-            unlink($this->path.'/'.$uniqueFileName.'.tmp');
-
-            //解锁
-            flock($lockFd, LOCK_UN);
-            fclose($lockFd);
-            unlink($this->path.'/'.$uniqueFileName.'.lock');
-
-            return $this->newFileName;
-
-        }
-        return false;
-    }
 
     /**
      * 设置随机文件名
@@ -438,15 +406,15 @@ class UpLoad
                 $file = $files->item(0);
                 $chunks = $file->getElementsByTagName('chunk');
                 $total_size = intval($file->getAttribute('size'));
-                $total_chunks =intval($file->getAttribute('chunks'));
+                $total_chunks = $statistic_chunks =intval($file->getAttribute('chunks'));
                 $chunks_statistic = array();
                 foreach ($chunks as $k => $v)
                 {
-                    $chunks_statistic["{$v->getAttribute('id')}"] =  $file->getAttribute('size');
-                    $total_size = $total_size - intval($file->getAttribute('size'));
-                    $total_chunks--;
+                    $chunks_statistic["{$v->getAttribute('id')}"] =  $v->getAttribute('size');
+                    $total_size = $total_size - intval($v->getAttribute('size'));
+                    $statistic_chunks--;
                 }
-                if(count($chunks_statistic) != $total_chunks || $total_size !== 0 || $total_chunks !==0)
+                if(count($chunks_statistic) != $total_chunks || $total_size !== 0 || $statistic_chunks !==0)
                 {
                     return false;
                 }else{
@@ -457,4 +425,82 @@ class UpLoad
         }
         return false;
     }
+    public static function hlsVod($path,$file_info,$sh_path,$log_path)
+    {
+        $hls_path = $path.'/'.self::$hls_vod.'/'.$file_info->getSaveName();
+        $file_name = $hls_path.'/'.$file_info->getName();
+        $merge_path = $path.'/'.self::$merge_file.'/'.$file_info->getSaveName().'/'.$file_info->getName();
+
+        if(file_exists($hls_path))
+        {
+            exec("{$sh_path}/mp4.sh {$merge_path} $file_name $log_path",$output,$result);
+            if($result == 0)
+            {
+                return true;
+            }else{
+                return false;
+            }
+        }
+        return false;
+    }
+    public static function chunksMerge($path,$file_info){
+        $chunk_path = $path.'/'.self::$chunk_file.'/'.$file_info->getSaveName();
+        $merge_path = $path.'/'.self::$merge_file.'/'.$file_info->getSaveName();
+        if(file_exists($chunk_path))
+        {
+            if(file_exists($chunk_path.'/'.self::$file_struct))
+            {
+                $dom = new \DOMDocument();
+                $dom->load($chunk_path.'/'.self::$file_struct);
+                $files = $dom->getElementsByTagName('file');
+                $file = $files->item(0);
+                $chunks = $file->getElementsByTagName('chunk');
+                $file_name = $file->getElementsByTagName('name');
+                $total_size = intval($file->getAttribute('size'));
+                $total_chunks = $statistic_chunks =intval($file->getAttribute('chunks'));
+                $chunks_statistic = array();
+                foreach ($chunks as $k => $v)
+                {
+                    $chunks_statistic["{$v->getAttribute('id')}"] =  $v->getAttribute('size');
+                    $total_size = $total_size - intval($v->getAttribute('size'));
+                    $statistic_chunks--;
+                }
+                if(count($chunks_statistic) != $total_chunks || $total_size !== 0 || $statistic_chunks !==0)
+                {
+                    return false;
+                }else{
+                    $lock_fd = fopen($chunk_path . '/' . substr($file_name, 0, strpos($file_name, '.') - 1) . '.lock', "w");
+                    if (!flock($lock_fd, LOCK_EX | LOCK_NB)) {
+                        fclose($lock_fd);
+                        return false;
+                    }
+
+                    //进行合并
+                    $file = fopen($merge_path . '/' .$file_name, 'wb');
+                    for ($index = 0; $index < $total_chunks; $index++) {
+                        $chunk_file   = $chunk_path . '/' . $index;
+                        $chunkFile = fopen($chunk_file, 'rb');
+                        $content   = fread($chunkFile, filesize($chunk_file));
+                        fclose($chunkFile);
+                        fwrite($file, $content);
+
+                        //删除chunk文件
+                        unlink($chunk_file);
+                    }
+                    fclose($file);
+                    //删除chunk文件夹
+                    rmdir($chunk_path);
+                    //解锁
+                    flock($lock_fd, LOCK_UN);
+                    fclose($lock_fd);
+                    unlink($chunk_path . '/' . substr($file_name, 0, strpos($file_name, '.') - 1) . '.lock');
+
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
 }

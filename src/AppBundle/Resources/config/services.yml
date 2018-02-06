@@ -1,5 +1,8 @@
 parameters:
-
+    task:
+        checkUpload: "task.check_upload"
+        mergeChunk: "task.merge_chunk"
+        hlsVod: "task.hls_vod"
 services:
 #    app.example:
 #        class:     AppBundle\Example
@@ -12,10 +15,15 @@ services:
     task.check_upload:
         class:  AppBundle\Service\Task\CheckUpload
         public: true
-        arguments: [@service_container]
-#    task.merge_chunk:
-#        class:  AppBundle\Service\Task\MergeChunk
-#        public: true
-#    task.hls_vod:
-#        class:  AppBundle\Service\Task\HlsVod
-#        public: true
+        arguments:
+            - '@service_container'
+    task.merge_chunk:
+        class:  AppBundle\Service\Task\MergeChunk
+        public: true
+        arguments:
+            - '@service_container'
+    task.hls_vod:
+        class:  AppBundle\Service\Task\HlsVod
+        public: true
+        arguments:
+            - '@service_container'

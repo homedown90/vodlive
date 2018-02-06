@@ -10,4 +10,20 @@ namespace AppBundle\Repository;
  */
 class VodFileRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function getNotMergedVod()
+    {
+        return $this->getEntityManager()
+            ->createQuery(
+                'SELECT c FROM AppBundle:VodFile c WHERE c.isMerge = 0 AND c.isUpload = 1'
+            )
+            ->getResult();
+    }
+    public function getNotHlsVod()
+    {
+        return $this->getEntityManager()
+            ->createQuery(
+                'SELECT c FROM AppBundle:VodFile c WHERE c.isMerge = 1 AND c.isHls = 0'
+            )
+            ->getResult();
+    }
 }

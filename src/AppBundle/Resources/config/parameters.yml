@@ -3,3 +3,4 @@ parameters:
     beanstalk_host: 127.0.0.1
     beanstalk_port: 11300
     beanstalk_timeout: 5
+    disable_alarm: 1

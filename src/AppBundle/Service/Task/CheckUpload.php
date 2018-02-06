@@ -8,6 +8,8 @@
 namespace AppBundle\Service\Task;
 
 
+use AppBundle\Command\VodWorkerCommand;
+
 class CheckUpload
 {
     private $server_container;
@@ -19,9 +21,9 @@ class CheckUpload
     private $msg = "checkUpload--";
     public function main($worker)
     {
-        $file_rsy = $worker->orm->getRepository('AppBundle:VodFile');
-        $logger = $worker->logger;
-        $file_list = $file_rsy->findByIsUpload(false);
+        $file_rsy = $this->server_container->get('doctrine')->getRepository('AppBundle:VodFile');
+        $logger =$this->server_container->get('logger');
+        $file_list = $file_rsy->findByIsUpload(true);
         if(empty($file_rsy))
         {
             $logger->error("{$this->msg}.不存在未上传的完成的视频");
@@ -42,8 +44,20 @@ class CheckUpload
     static function register($worker) {
         $worker->registerHandle('check_upload', array('task.check_upload','checkUpload'));
     }
-    public function checkUpload()
+    public function checkUpload($id)
     {
+        $upload_url = $this->server_container->getParameter('brochures_directory'); // 这里得到的是app目录的绝对路
+        $file_rsy = $this->server_container->get('doctrine')->getRepository("AppBundle:VodFile");
+        $obj_file = $file_rsy->findOneById($id);
 
+        if(UpLoad::checkUploadFinished($upload_url,$obj_file))
+        {
+            $obj_file->setIsUpload(true);
+            $em = $this->$this->server_container->get('doctrine')->getManager();
+            $em->flush();
+            return VodWorkerCommand::TASK_OK;
+        }else{
+            return VodWorkerCommand::TASK_RETRY;
+        }
     }
 }
